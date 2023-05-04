@@ -30,13 +30,15 @@
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:layout_marginBottom="10dp"
             android:background="@color/white"
-            android:layout_marginTop="15dp"
             android:ems="10"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:padding="9dp" />
+            android:padding="9dp"
+            android:textColor="#000000"
+            android:textColorHint="#9A9090" />
 
         <EditText
             android:id="@+id/etPassword"
@@ -46,7 +48,9 @@
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword"
-            android:padding="9dp" />
+            android:padding="9dp"
+            android:textColor="#000000"
+            android:textColorHint="#9A9090" />
 
         <TextView
             android:id="@+id/tvClickSignUp"

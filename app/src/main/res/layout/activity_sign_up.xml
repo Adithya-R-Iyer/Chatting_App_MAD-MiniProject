@@ -35,7 +35,9 @@
             android:ems="10"
             android:hint="Username"
             android:inputType="textPersonName"
-            android:padding="9dp" />
+            android:padding="9dp"
+            android:textColor="#000000"
+            android:textColorHint="#9A9090" />
 
         <EditText
             android:id="@+id/etEmail"
@@ -46,7 +48,9 @@
             android:ems="10"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:padding="9dp" />
+            android:padding="9dp"
+            android:textColor="#000000"
+            android:textColorHint="#9A9090" />
 
         <EditText
             android:id="@+id/etPassword"
@@ -56,7 +60,9 @@
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword"
-            android:padding="9dp" />
+            android:padding="9dp"
+            android:textColor="#000000"
+            android:textColorHint="#9A9090" />
 
         <TextView
             android:id="@+id/tvAlreadyAccount"
