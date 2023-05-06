@@ -9,31 +9,18 @@
     >
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:layout_height="56dp"
+        android:background="@color/colorPrimary"
+        android:elevation="12dp"
+        app:tabIndicator="@color/white"
+        app:tabSelectedTextColor="@color/white"
+        app:tabMaxWidth="0dp"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        />
 
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/tabItem1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tab 1" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/tabItem2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tab 2" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/tabItem3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tab 3" />
-
-    </com.google.android.material.tabs.TabLayout>
+    <androidx.viewpager.widget.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>
