@@ -71,7 +71,7 @@
             android:layout_gravity="right"
             android:gravity="right"
             android:padding="3dp"
-            android:text="Already Have Account" />
+            android:text="Already Have Account?" />
 
         <Button
             android:id="@+id/btn_signUp"
