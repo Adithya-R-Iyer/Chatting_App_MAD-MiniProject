@@ -41,6 +41,14 @@ public class Users {
         return mail;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public void setMail(String mail) {
         this.mail = mail;
     }
@@ -53,13 +61,6 @@ public class Users {
         this.password = password;
     }
 
-    public String getUserId(String key) {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
 
     public String getLastMessage() {
         return lastMessage;

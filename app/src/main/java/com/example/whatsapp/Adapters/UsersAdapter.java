@@ -1,6 +1,7 @@
 package com.example.whatsapp.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.whatsapp.ChatDetailActivity;
 import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.R;
 import com.squareup.picasso.Picasso;
@@ -40,6 +42,18 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>{
         Users user = list.get(position);
         Picasso.get().load(user.getProfilepic()).placeholder(R.drawable.profile).into(holder.image);
         holder.userName.setText(user.getUserName());
+
+        // Code to send Data from ChatsFragments Activity to the ChatDetail Activity when clicked on a User's Profle
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ChatDetailActivity.class);
+                intent.putExtra("userId",user.getUserId());
+                intent.putExtra("profilePic",user.getProfilepic());
+                intent.putExtra("userName",user.getUserName());
+                context.startActivity(intent);
+            }
+        });
     }
 
     //How Many Items ??
@@ -59,6 +73,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>{
             image = itemView.findViewById(R.id.profileImage);
             userName = itemView.findViewById(R.id.userNameList);
             lastMessage = itemView.findViewById(R.id.lastMessage);
+
         }
     }
 
