@@ -26,4 +26,4 @@ This is a Chatting application similar to whats app... but with more advanced an
 
 ### Repository View Counter - HITS
 
-![Hits](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https://github.com/Tanu-N-Prabhu/Python)
+![](https://komarev.com/ghpvc/?username=Adithya-R-Iyer&color=green)
