@@ -65,6 +65,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         final String senderRoom = senderId + receiverId; // This ID is used to create a 1st child node inside Chats from Sender to Receiver in the FireBase database
         final String receiverRoom = receiverId + senderId; // This ID is used to create a  2nd child node inside Chats from Receiver to Sender in the FireBase database
 
+        // Code to update the RecyclerView Whenever a new Chat is send by the sender
         database.getReference().child("chats").child(senderRoom).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -72,7 +73,6 @@ public class ChatDetailActivity extends AppCompatActivity {
                 for(DataSnapshot snapshot1 : snapshot.getChildren()) {
                     MessagesModel model = snapshot1.getValue(MessagesModel.class); // By passing MessageModel.class as an parameter we are telling Firebase Database to deserialize the data snapshot into an object of type MessagesModel
                     messagesModels.add(model);
-
                 }
                 adapter.notifyDataSetChanged(); //not compulsory as the RecyclerView can sometimes automatically detect changes by itself when a new data is appended to the end of the list without using this method
             }
@@ -92,7 +92,7 @@ public class ChatDetailActivity extends AppCompatActivity {
                 messagesModel.setTimestamp(new Date().getTime());
                 binding.etMessage.setText("");
 
-                // Here .push() ensures that a new Id is created with the help of the TimeStamp ...whenever a new message is sent
+                // Here .push() ensures that a new Id is created with the help of the TimeStamp ...whenever a new message is sent -> Push is usually used to create unique id's
                 database.getReference().child("chats").child(senderRoom).push().setValue(messagesModel).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {

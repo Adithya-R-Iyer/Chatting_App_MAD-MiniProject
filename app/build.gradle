@@ -24,6 +24,16 @@ android {
         }
     }
 
+//    splits {
+//        abi {
+//            enable true
+//            universalApk false
+//            reset()
+//            include 'armeabi-v7a', 'x86'
+//        }
+//    }
+
+
     buildFeatures {
         viewBinding true
     }
