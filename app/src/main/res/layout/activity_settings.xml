@@ -27,14 +27,15 @@
         android:layout_marginRight="20dp"
         >
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            app:tint="#FFFFFF"
-            app:srcCompat="@drawable/round_shape" />
+            app:civ_border_color="#FF000000"
+            app:civ_border_width="2dp"
+            android:src = "@drawable/profile" />
 
         <ImageView
             android:id="@+id/plus"

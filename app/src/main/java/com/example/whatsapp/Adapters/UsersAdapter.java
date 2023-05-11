@@ -49,6 +49,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>{
         Picasso.get().load(user.getProfilepic()).placeholder(R.drawable.profile).into(holder.image);
         holder.userName.setText(user.getUserName());
 
+        //Code to display User's Last Message on their profile
         FirebaseDatabase.getInstance().getReference().child("chats")
                 .child(FirebaseAuth.getInstance().getUid() + user.getUserId())
                 .orderByChild("timestamp")
