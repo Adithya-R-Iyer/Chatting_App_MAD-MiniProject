@@ -14,6 +14,8 @@ import com.example.whatsapp.Adapters.FragmentsAdapter;
 import com.example.whatsapp.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Set;
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
@@ -43,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.setting:
-                Toast.makeText(this, "Settings Clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
                 break;
 
             case R.id.groupChat:
