@@ -2,6 +2,7 @@ package com.example.whatsapp.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.whatsapp.ChatDetailActivity;
 import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -42,6 +48,27 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>{
         Users user = list.get(position);
         Picasso.get().load(user.getProfilepic()).placeholder(R.drawable.profile).into(holder.image);
         holder.userName.setText(user.getUserName());
+
+        FirebaseDatabase.getInstance().getReference().child("chats")
+                .child(FirebaseAuth.getInstance().getUid() + user.getUserId())
+                .orderByChild("timestamp")
+                .limitToLast(1)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.hasChildren()) {
+                            for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                holder.lastMessage.setText(dataSnapshot.child("message").getValue().toString());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
 
         // Code to send Data from ChatsFragments Activity to the ChatDetail Activity when clicked on a User's Profle
         holder.itemView.setOnClickListener(new View.OnClickListener() {
