@@ -88,6 +88,12 @@ public class ChatDetailActivity extends AppCompatActivity {
         binding.send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if(binding.etMessage.getText().toString().isEmpty()) {
+                    binding.etMessage.setError("Message Cannot be Empty");
+                    return;
+                }
+
                 String message = binding.etMessage.getText().toString();
                 final MessagesModel messagesModel = new MessagesModel(senderId, message);
                 messagesModel.setTimestamp(new Date().getTime());
