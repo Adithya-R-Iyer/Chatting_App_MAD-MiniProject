@@ -53,7 +53,9 @@ public class ChatsFragment extends Fragment {
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Users users = dataSnapshot.getValue(Users.class);
                     users.setUserId(dataSnapshot.getKey());
-                    list.add(users);
+                    if(!users.getUserId().equals(FirebaseAuth.getInstance().getUid())) {    //code to remove user from the list who is currently logged in
+                        list.add(users);
+                    }
                 }
                 adapter.notifyDataSetChanged();
             }
