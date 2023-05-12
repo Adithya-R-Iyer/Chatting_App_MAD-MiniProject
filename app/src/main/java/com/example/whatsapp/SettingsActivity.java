@@ -24,6 +24,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+
 public class SettingsActivity extends AppCompatActivity {
 
     ActivitySettingsBinding binding;
@@ -53,12 +55,31 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        binding.saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String status = binding.etStatus.getText().toString();
+                String username = binding.etUserName.getText().toString();
+
+                HashMap<String, Object> obj = new HashMap<>();
+                obj.put("userName", username);
+                obj.put("status", status);
+
+                database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).updateChildren(obj);
+
+                Toast.makeText(SettingsActivity.this, "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         //COde to set the profic pic of the user ...if the pic exists in the database
         database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Users user = snapshot.getValue(Users.class);
                 Picasso.get().load(user.getProfilepic()).placeholder(R.drawable.profile).into(binding.profileImage);
+
+                binding.etUserName.setText(user.getUserName());
+                binding.etStatus.setText(user.getStatus());
             }
 
             @Override
