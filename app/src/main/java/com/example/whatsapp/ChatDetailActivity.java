@@ -56,7 +56,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         });
 
         final ArrayList<MessagesModel> messagesModels = new ArrayList<>();
-        final ChatAdapter adapter = new ChatAdapter(messagesModels, this);
+        final ChatAdapter adapter = new ChatAdapter(messagesModels, this, receiverId);
         binding.chatRecyclerView.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -72,6 +72,7 @@ public class ChatDetailActivity extends AppCompatActivity {
                 messagesModels.clear();
                 for(DataSnapshot snapshot1 : snapshot.getChildren()) {
                     MessagesModel model = snapshot1.getValue(MessagesModel.class); // By passing MessageModel.class as an parameter we are telling Firebase Database to deserialize the data snapshot into an object of type MessagesModel
+                    model.setMessageId(snapshot1.getKey());
                     messagesModels.add(model);
                 }
                 adapter.notifyDataSetChanged(); //not compulsory as the RecyclerView can sometimes automatically detect changes by itself when a new data is appended to the end of the list without using this method
