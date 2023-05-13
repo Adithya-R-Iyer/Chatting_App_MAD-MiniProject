@@ -39,6 +39,7 @@ public class ChatsFragment extends Fragment {
         binding =  FragmentChatsBinding.inflate(inflater, container, false);
 
         database = FirebaseDatabase.getInstance();
+
         UsersAdapter adapter = new UsersAdapter(list, getContext());
         binding.chatRecyclerView.setAdapter(adapter);
 

@@ -101,7 +101,7 @@ public class SignInActivity extends AppCompatActivity {
                 signIn();
             }
         });
-
+//if user is still present then take him directly to the main activity
         if (auth.getCurrentUser() != null) {
             Intent intent = new Intent(SignInActivity.this, MainActivity.class);
             startActivity(intent);

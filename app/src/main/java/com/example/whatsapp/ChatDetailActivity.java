@@ -56,6 +56,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         });
 
         final ArrayList<MessagesModel> messagesModels = new ArrayList<>();
+        //this calls the adapter class which creates styled messages that uses both the activities sample_reciver and sample_sender
         final ChatAdapter adapter = new ChatAdapter(messagesModels, this, receiverId);
         binding.chatRecyclerView.setAdapter(adapter);
 
