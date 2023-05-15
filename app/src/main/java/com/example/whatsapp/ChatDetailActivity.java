@@ -271,7 +271,7 @@ public class ChatDetailActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(ChatDetailActivity.this,"scheduled message set to"+String.valueOf(hours)+":"+String.valueOf(minutes),Toast.LENGTH_LONG).show();
+        Toast.makeText(ChatDetailActivity.this,"scheduled message set to "+String.valueOf(hours)+":"+String.valueOf(minutes),Toast.LENGTH_LONG).show();
         // Post the task with the calculated delay
         handler.postDelayed(task, delay);
     }
