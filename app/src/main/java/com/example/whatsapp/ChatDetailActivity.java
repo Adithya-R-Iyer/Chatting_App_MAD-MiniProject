@@ -1,12 +1,14 @@
 package com.example.whatsapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.speech.RecognizerIntent;
 import android.view.View;
 
 import com.example.whatsapp.Adapters.ChatAdapter;
@@ -56,6 +58,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         });
 
         final ArrayList<MessagesModel> messagesModels = new ArrayList<>();
+        //this calls the adapter class which creates styled messages that uses both the activities sample_reciver and sample_sender
         final ChatAdapter adapter = new ChatAdapter(messagesModels, this, receiverId);
         binding.chatRecyclerView.setAdapter(adapter);
 
@@ -116,5 +119,26 @@ public class ChatDetailActivity extends AppCompatActivity {
             }
         });
 
+        binding.speechToText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SpeakNow(view);
+            }
+        });
+
+    }
+    private void SpeakNow(View view){
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Start Speaking...");
+        startActivityForResult(intent,111);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==111 && resultCode== RESULT_OK){
+            binding.etMessage.setText(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0));
+        }
     }
 }

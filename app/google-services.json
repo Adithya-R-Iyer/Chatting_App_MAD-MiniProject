@@ -1,42 +1,33 @@
 {
   "project_info": {
-    "project_number": "471403103717",
-    "firebase_url": "https://whatsapp-5a1fe-default-rtdb.firebaseio.com",
-    "project_id": "whatsapp-5a1fe",
-    "storage_bucket": "whatsapp-5a1fe.appspot.com"
+    "project_number": "807096772785",
+    "project_id": "chatting-app-db272",
+    "storage_bucket": "chatting-app-db272.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:471403103717:android:e1b5a57332f16164c5db0c",
+        "mobilesdk_app_id": "1:807096772785:android:0f49395730e5ba9062da90",
         "android_client_info": {
           "package_name": "com.example.whatsapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "471403103717-a4jurqed7l45nevqembou9pjek097ec4.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.whatsapp",
-            "certificate_hash": "3be58a563532892984128eabc853c1fb61bd690e"
-          }
-        },
-        {
-          "client_id": "471403103717-52vn9gs6mpjhqlpv2ls1kj7r9au8sc55.apps.googleusercontent.com",
+          "client_id": "807096772785-rem4av4sa8nlratolnc9tus6uo4tu2j9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBqi2BB6F6PksvIbPvvYPiowupKJyBtGJw"
+          "current_key": "AIzaSyCb2YObH6AzeLBTsTxjzX-FFkgE9geUqXc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "471403103717-52vn9gs6mpjhqlpv2ls1kj7r9au8sc55.apps.googleusercontent.com",
+              "client_id": "807096772785-rem4av4sa8nlratolnc9tus6uo4tu2j9.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

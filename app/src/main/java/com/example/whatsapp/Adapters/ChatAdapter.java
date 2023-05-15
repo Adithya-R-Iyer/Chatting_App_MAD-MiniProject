@@ -101,6 +101,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
 //    The getItemViewType() function is called by the RecyclerView to get the view type of the item at the given position.
 //    It is called when the RecyclerView is created, or when the data set of the adapter is changed
+    //first function that will be called automatically
     @Override
     public int getItemViewType(int position) {
 

@@ -19,7 +19,7 @@ public class FragmentsAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-
+//returns the types of activity that should be opened when the viewpager is at a specific position
         switch(position) {
             case 0 : return new ChatsFragment();
             case 1 : return new StatusFragment();
@@ -32,7 +32,9 @@ public class FragmentsAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return 3;
     }
+    //returns the number of tabs
 
+    //returns the title based on which position the viewpager is in
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {

@@ -38,6 +38,13 @@
             android:textColorHint="#9A9090" />
 
         <ImageView
+            android:id="@+id/speechToText"
+            android:layout_width="14dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/bxs_microphone" />
+
+        <ImageView
             android:id="@+id/send"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -134,6 +141,14 @@
                 app:layout_constraintVertical_bias="0.5"
                 app:srcCompat="@drawable/menu"
                 app:tint="@color/white" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="43dp"
+                android:layout_height="32dp"
+                app:srcCompat="@drawable/bxs_user_voice"
+                tools:layout_editor_absoluteX="222dp"
+                tools:layout_editor_absoluteY="8dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
