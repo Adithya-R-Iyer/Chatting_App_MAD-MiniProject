@@ -143,12 +143,15 @@
                 app:tint="@color/white" />
 
             <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="43dp"
-                android:layout_height="32dp"
-                app:srcCompat="@drawable/bxs_user_voice"
-                tools:layout_editor_absoluteX="222dp"
-                tools:layout_editor_absoluteY="8dp" />
+                android:id="@+id/scheduledMessage"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/imageView3"
+                app:layout_constraintHorizontal_bias="0.802"
+                app:layout_constraintStart_toEndOf="@+id/userName"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/sheduled_message" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
