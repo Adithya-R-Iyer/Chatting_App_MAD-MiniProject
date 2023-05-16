@@ -31,8 +31,6 @@ import java.util.Date;
 public class GroupChatActivity extends AppCompatActivity {
 
     ActivityGroupChatBinding binding;
-    FirebaseDatabase database;
-    FirebaseAuth auth;
     String scheduled_message="";
 
     private Handler handler;
@@ -172,7 +170,7 @@ public class GroupChatActivity extends AppCompatActivity {
                 database.getReference().child("Group Chat").push().setValue(messagesModel).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        
+
                     }
                 });
 
