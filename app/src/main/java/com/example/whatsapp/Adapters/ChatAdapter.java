@@ -17,7 +17,9 @@ import com.example.whatsapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ChatAdapter extends RecyclerView.Adapter{
 
@@ -89,12 +91,22 @@ public class ChatAdapter extends RecyclerView.Adapter{
             }
         });
 
+        //CONVERSION OF TIMESTAMP TO DATE :- HH:mm
+        // Create a new Date object using the timestamp
+        Date date = new Date(messagesModel.getTimestamp());
+        // Create a SimpleDateFormat object to format the date as "HH:mm"
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        // Use the SimpleDateFormat object to format the date as a string containing only "HH:mm"
+        String timeString = dateFormat.format(date);
 
         if(holder.getClass() == SenderViewHolder.class) {
+
             ((SenderViewHolder)holder).senderText.setText(messagesModel.getMessage());
+            ((SenderViewHolder)holder).senderTime.setText(timeString);
         }
         else {
             ((ReceiverViewHolder)holder).receiverText.setText(messagesModel.getMessage());
+            ((ReceiverViewHolder)holder).receiverTime.setText(timeString);
         }
 
     }
