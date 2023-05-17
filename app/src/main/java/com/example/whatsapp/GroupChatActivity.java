@@ -10,11 +10,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.whatsapp.Adapters.ChatAdapter;
+import com.example.whatsapp.Adapters.GroupChatAdapter;
 import com.example.whatsapp.Models.MessagesModel;
 import com.example.whatsapp.databinding.ActivityGroupChatBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,6 +33,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
     ActivityGroupChatBinding binding;
     String scheduled_message="";
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     private Handler handler;
     private Runnable task;
@@ -53,11 +55,12 @@ public class GroupChatActivity extends AppCompatActivity {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final ArrayList<MessagesModel> messagesModels = new ArrayList<>();
+        final ArrayList<String> userNames = new ArrayList<>();
 
         final String senderId = FirebaseAuth.getInstance().getUid();
         binding.userName.setText("Friends Group");
 
-        final ChatAdapter adapter = new ChatAdapter(messagesModels, this);
+        final GroupChatAdapter adapter = new GroupChatAdapter(messagesModels, this);
         binding.chatRecyclerView.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -68,10 +71,30 @@ public class GroupChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 messagesModels.clear();
+                userNames.clear();
+
                 for(DataSnapshot dataSnapshot : snapshot.getChildren() ) {
                     MessagesModel model = dataSnapshot.getValue(MessagesModel.class);
+                    model.setMessageId(dataSnapshot.getKey());
+
+                    database.getReference().child("Users").child(model.getuId()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String username = snapshot.getValue(String.class);
+//                            userNames.add(username);
+                            model.setUserName(username);
+//                            Log.d("msg","entered" + model.getUserName());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
                     messagesModels.add(model);
                 }
+//                Log.d("userNames", messagesModels.get(1));
                 adapter.notifyDataSetChanged();
             }
 
