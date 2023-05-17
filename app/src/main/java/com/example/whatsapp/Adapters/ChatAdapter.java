@@ -64,6 +64,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
         MessagesModel messagesModel = messagesModels.get(position);
 
+        //if the position of the array list is greater than or equal to 1 then ...get the details(date) of the previous message and check if both the messages are from the same day... if so return 1 else return 0
         if(position>=1){
             MessagesModel prevMessageModel = messagesModels.get(position-1);
 
@@ -122,6 +123,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
         String timeString = dateFormat.format(databaseDate);
         String databaseDateString = dateFormat1.format(databaseDate);
 
+        //Getting Current Date and Time
         long currentTimeStamp = System.currentTimeMillis();
         Date currentDate = new Date(currentTimeStamp);
         String currentDateString = dateFormat1.format(currentDate);
@@ -145,36 +147,38 @@ public class ChatAdapter extends RecyclerView.Adapter{
 //        }
 
         if(holder.getClass() == SenderViewHolder.class) {
-//            ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-//            ((SenderViewHolder)holder).etDate.setText("xyz");1
-            if(currentDateString.equals(databaseDateString) && flag!=1){
+            //Conditional Statement to Verify and display the dates accordingly
+            if(currentDateString.equals(databaseDateString) && flag==0){
                 ((SenderViewHolder)holder).etDate.setText("Today");
                 ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
             }
             else if(flag==1) {
                 ((SenderViewHolder)holder).etDate.setVisibility(View.GONE);
+                flag=0;
             }
-            else {
+            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
                 ((SenderViewHolder)holder).etDate.setText(databaseDateString);
                 ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
             }
+
             ((SenderViewHolder)holder).senderText.setText(messagesModel.getMessage());
             ((SenderViewHolder)holder).senderTime.setText(timeString);
         }
         else {
-//            ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-//            ((ReceiverViewHolder)holder).etDate.setText("xys");
-            if(currentDateString.equals(databaseDateString) && flag!=1){
+            //Conditional Statements to verify and display the dates accordingly
+            if(currentDateString.equals(databaseDateString) && flag==0){
                 ((ReceiverViewHolder)holder).etDate.setText("Today");
                 ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
             }
             else if(flag==1) {
                 ((ReceiverViewHolder)holder).etDate.setVisibility(View.GONE);
+                flag=0;
             }
-            else {
+            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
                 ((ReceiverViewHolder)holder).etDate.setText(databaseDateString);
                 ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
             }
+
             ((ReceiverViewHolder)holder).receiverText.setText(messagesModel.getMessage());
             ((ReceiverViewHolder)holder).receiverTime.setText(timeString);
         }
