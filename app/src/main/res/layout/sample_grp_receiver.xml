@@ -29,28 +29,43 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="7dp"
         android:layout_marginRight="7dp"
+        android:layout_marginBottom="3dp"
         android:background="@drawable/bg_receiver"
         android:maxWidth="310dp"
         android:maxHeight="400dp"
         android:paddingRight="4dp">
 
         <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="User Name"
+            android:textColor="#5F5D5D"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.133"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/receiverText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="3dp"
             android:layout_marginBottom="3dp"
             android:inputType="textLongMessage|textMultiLine"
             android:maxWidth="270dp"
             android:minWidth="50dp"
             android:text="TextView"
             android:textColor="#000000"
-            app:layout_constraintBottom_toTopOf="@+id/receiverTime"
 
+            app:layout_constraintBottom_toTopOf="@+id/receiverTime"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toBottomOf="@+id/userName" />
 
         <TextView
             android:id="@+id/receiverTime"

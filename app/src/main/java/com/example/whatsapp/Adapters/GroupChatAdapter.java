@@ -3,6 +3,7 @@ package com.example.whatsapp.Adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.whatsapp.Models.MessagesModel;
 import com.example.whatsapp.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -23,23 +28,24 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ChatAdapter extends RecyclerView.Adapter{
+public class GroupChatAdapter extends RecyclerView.Adapter{
 
     ArrayList<MessagesModel> messagesModels;
     Context context;
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
     String recvId;
 
     int SENDER_VIEW_TYPE = 1;
     int RECEIVER_VIEW_TYPE = 2;
     int flag =0;
 
-    public ChatAdapter(ArrayList<MessagesModel> messagesModels, Context context) {
+    public GroupChatAdapter(ArrayList<MessagesModel> messagesModels, Context context) {
         this.messagesModels = messagesModels;
         this.context = context;
     }
 
-    public ChatAdapter(ArrayList<MessagesModel> messagesModels, Context context, String recvId) {
+    public GroupChatAdapter(ArrayList<MessagesModel> messagesModels, Context context, String recvId) {
         this.messagesModels = messagesModels;
         this.context = context;
         this.recvId = recvId;
@@ -54,7 +60,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
             return new SenderViewHolder(view);
         }
         else {
-            View view = LayoutInflater.from(context).inflate(R.layout.sample_receiver, parent, false);
+            View view = LayoutInflater.from(context).inflate(R.layout.sample_grp_receiver, parent, false);
             return new ReceiverViewHolder(view);
         }
     }
@@ -94,10 +100,8 @@ public class ChatAdapter extends RecyclerView.Adapter{
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
 
-                                FirebaseAuth auth = FirebaseAuth.getInstance();
                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                String senderRoom = auth.getUid() + recvId;
-                                database.getReference().child("chats").child(senderRoom).child(messagesModel.getMessageId()).setValue(null);
+                                database.getReference().child("Group Chat").child(messagesModel.getMessageId()).setValue(null);
 
                             }
                         })
@@ -179,13 +183,14 @@ public class ChatAdapter extends RecyclerView.Adapter{
                 ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
             }
 
+            ((ReceiverViewHolder)holder).userName.setText(messagesModel.getUserName());
             ((ReceiverViewHolder)holder).receiverText.setText(messagesModel.getMessage());
             ((ReceiverViewHolder)holder).receiverTime.setText(timeString);
         }
 
     }
 
-//    The getItemViewType() function is called by the RecyclerView to get the view type of the item at the given position.
+    //    The getItemViewType() function is called by the RecyclerView to get the view type of the item at the given position.
 //    It is called when the RecyclerView is created, or when the data set of the adapter is changed
     //first function that will be called automatically
     @Override
@@ -208,13 +213,14 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
     public class ReceiverViewHolder extends RecyclerView.ViewHolder {
 
-        TextView receiverText, receiverTime, etDate;
+        TextView receiverText, receiverTime, etDate, userName;
 
         public ReceiverViewHolder(@NonNull View itemView) {
             super(itemView);
             receiverText = itemView.findViewById(R.id.receiverText);
             receiverTime = itemView.findViewById(R.id.receiverTime);
             etDate = itemView.findViewById(R.id.etDate);
+            userName = itemView.findViewById(R.id.userName);
 
         }
     }

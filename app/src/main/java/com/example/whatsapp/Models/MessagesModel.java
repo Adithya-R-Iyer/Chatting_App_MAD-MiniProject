@@ -2,12 +2,14 @@ package com.example.whatsapp.Models;
 
 public class MessagesModel {
 
-    String uId, message, messageId;
+    String uId, message, messageId, userName;
     Long timestamp;
 
-    public MessagesModel(String uId, String message, Long timestamp) {
+    public MessagesModel(String uId, String message, String messageId, String userName, Long timestamp) {
         this.uId = uId;
         this.message = message;
+        this.messageId = messageId;
+        this.userName = userName;
         this.timestamp = timestamp;
     }
 
@@ -17,6 +19,14 @@ public class MessagesModel {
     }
 
     public MessagesModel() {
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getuId() {

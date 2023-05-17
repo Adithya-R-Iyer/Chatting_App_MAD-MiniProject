@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.whatsapp.Adapters.ChatAdapter;
 import com.example.whatsapp.Models.MessagesModel;
+
 import com.example.whatsapp.databinding.ActivityChatDetailBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
