@@ -3,36 +3,46 @@ package com.example.whatsapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DownloadManager;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.whatsapp.Models.Users;
-import com.example.whatsapp.databinding.ActivityChatDetailBinding;
 import com.example.whatsapp.databinding.ActivityOtherUserProfileBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class OtherUserProfileActivity extends AppCompatActivity {
     ActivityOtherUserProfileBinding binding;
     FirebaseDatabase database;
-    TextView username;
+    FirebaseStorage storage;
+    ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         binding = ActivityOtherUserProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        database=FirebaseDatabase.getInstance();
-//        username=findViewById(R.id.user__Name);
+        database = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
+
         String receiverId = getIntent().getStringExtra("receiverId");
         String profilePic = getIntent().getStringExtra("profilePic");
         String userName = getIntent().getStringExtra("userName");
@@ -102,6 +112,52 @@ public class OtherUserProfileActivity extends AppCompatActivity {
                 intent1.putExtra("profilePic",profilePic);
                 intent1.putExtra("userName",userName);
                 startActivity(intent1);
+            }
+        });
+
+        binding.downloadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                storage.getReference().child("profile_pictures").child(Objects.requireNonNull(receiverId)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+//                        progressDialog = new ProgressDialog(OtherUserProfileActivity.this);
+//                        progressDialog.setTitle("Download");
+//                        progressDialog.setMessage("Downloading Profile Picture...");
+
+                        database.getReference().child("Users").child(receiverId).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                                progressDialog.show();
+                                Toast.makeText(OtherUserProfileActivity.this, "Downloading...", Toast.LENGTH_SHORT).show();
+                                // Create a DownloadManager instance
+                                DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                                // Create a request for the download
+                                DownloadManager.Request request = new DownloadManager.Request(uri);
+                                // Set the destination path for the downloaded file
+                                String fileName = snapshot.getValue(String.class);
+                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName + ".jpg");
+                                // Set the notification visibility
+                                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                                // Enqueue the download request and get the download ID
+                                long downloadId = downloadManager.enqueue(request);
+//                                progressDialog.dismiss();
+
+                                Uri downloadedFileUri = downloadManager.getUriForDownloadedFile(downloadId);
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setDataAndType(downloadedFileUri, "image/*");
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                });
             }
         });
 
