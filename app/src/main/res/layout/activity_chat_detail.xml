@@ -99,12 +99,12 @@
                 android:layout_height="wrap_content"
                 android:text="Joe Root"
                 android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.5" />
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
                 android:id="@+id/imageView3"
@@ -152,6 +152,16 @@
                 app:layout_constraintStart_toEndOf="@+id/userName"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/sheduled_message" />
+
+            <TextView
+                android:id="@+id/onlineCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="TextView"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/profileImage"
+                app:layout_constraintTop_toBottomOf="@+id/userName" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,9 +1,9 @@
 package com.example.whatsapp.Models;
 
 public class Users {
-    String profilepic, userName, mail, password, userId, lastMessage, status;
+    String profilepic, userName, mail, password, userId, lastMessage, status,online;
 
-    public Users(String profilepic, String userName, String mail, String password, String userId, String lastMessage, String status) {
+    public Users(String profilepic, String userName, String mail, String password, String userId, String lastMessage, String status, String online) {
         this.profilepic = profilepic;
         this.userName = userName;
         this.mail = mail;
@@ -11,15 +11,17 @@ public class Users {
         this.userId = userId;
         this.lastMessage = lastMessage;
         this.status = status;
+        this.online=online;
     }
 
     public Users() {}
 
     // SignUp Constructor
-    public Users(String userName, String mail, String password) {
+    public Users(String userName, String mail, String password,String online) {
         this.userName = userName;
         this.mail = mail;
         this.password = password;
+        this.online=online;
     }
 
     public String getStatus() {
@@ -77,5 +79,13 @@ public class Users {
 
     public void setLastMessage(String lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public String getOnline() {
+        return online;
+    }
+
+    public void setOnline(String online) {
+        this.online = online;
     }
 }

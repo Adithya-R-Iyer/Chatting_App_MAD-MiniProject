@@ -11,9 +11,14 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.whatsapp.Adapters.FragmentsAdapter;
+import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         auth = FirebaseAuth.getInstance();
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding.viewPager.setAdapter(new FragmentsAdapter(getSupportFragmentManager()));
         binding.tabLayout.setupWithViewPager(binding.viewPager);
+//        setOnlineStatus("online");
     }
 
     @Override
@@ -55,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.logout:
+                DatabaseReference ref= FirebaseDatabase.getInstance().getReference("Users").child(auth.getUid());
+                ref.child("online").setValue(String.valueOf(new Date().getTime()));
                 auth.signOut();
                 Intent intent2 = new Intent(MainActivity.this, SignInActivity.class);
                 startActivity(intent2);
@@ -62,5 +71,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+//    private void setOnlineStatus(String online){
+//        DatabaseReference ref= FirebaseDatabase.getInstance().getReference("Users").child(auth.getUid());
+//        HashMap<String,Object> hashMap=new HashMap<>();
+//        Users user=new Users();
+//        hashMap.put("online",online);
+//        ref.updateChildren(hashMap);
+//    }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        setOnlineStatus("online");
+//    }
+//
+//
+//
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        setOnlineStatus("offline");
+//    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DatabaseReference ref= FirebaseDatabase.getInstance().getReference("Users").child(auth.getUid());
+        ref.child("online").setValue(String.valueOf(new Date().getTime()));
     }
 }

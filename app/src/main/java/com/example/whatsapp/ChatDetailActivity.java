@@ -12,17 +12,20 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.whatsapp.Adapters.ChatAdapter;
 import com.example.whatsapp.Models.MessagesModel;
 
+import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.databinding.ActivityChatDetailBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
@@ -42,9 +45,12 @@ public class ChatDetailActivity extends AppCompatActivity {
     FirebaseDatabase database;
     FirebaseAuth auth;
     String scheduled_message="";
+    TextView onlineCheck;
 
     private Handler handler;
     private Runnable task;
+
+
 
 
     @Override
@@ -52,10 +58,11 @@ public class ChatDetailActivity extends AppCompatActivity {
         //initialise the handler
         handler=new Handler();
 
-
         super.onCreate(savedInstanceState);
         binding = ActivityChatDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        onlineCheck=binding.onlineCheck;
 
         getSupportActionBar().hide();
         database = FirebaseDatabase.getInstance();
@@ -76,6 +83,65 @@ public class ChatDetailActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        //HERE ONLINE CHECK
+        database.getReference().child("Users").child(receiverId).child("online").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String online = snapshot.getValue(String.class);
+                    if (online.equals("online")) {
+                        onlineCheck.setText("ONLINE");
+                    } else {
+                        // User is offline
+                        // Perform the desired action
+                        long milli=Long.parseLong(online);
+
+                        // Create a new Date object using the timestamp
+                        long databaseTimeStamp = milli;
+                        Date databaseDate = new Date(databaseTimeStamp);
+                        // Create a SimpleDateFormat object to format the date as "HH:mm"
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy");
+                        // Use the SimpleDateFormat object to format the date as a string containing only "HH:mm"
+                        String timeString = dateFormat.format(databaseDate);
+                        String databaseDateString = dateFormat1.format(databaseDate);
+
+                        //Getting Current Date and Time
+                        long currentTimeStamp = System.currentTimeMillis();
+                        Date currentDate = new Date(currentTimeStamp);
+                        String currentDateString = dateFormat1.format(currentDate);
+
+                        if(currentDateString.equals(databaseDateString))
+                        {
+                            onlineCheck.setText(timeString);
+                        }
+
+                        else{
+                            onlineCheck.setText(databaseDateString);
+                        }
+
+
+//                        onlineCheck.setText(online);
+//                        Toast.makeText(ChatDetailActivity.this,online,Toast.LENGTH_LONG).show();
+
+                    }
+                } else {
+                    // Handle the case when the "online" field does not exist for the user
+                    Toast.makeText(ChatDetailActivity.this,"sorry online field doesnt exist",Toast.LENGTH_LONG).show();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ChatDetailActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+
+
 
         final ArrayList<MessagesModel> messagesModels = new ArrayList<>();
         //this calls the adapter class which creates styled messages that uses both the activities sample_reciver and sample_sender
@@ -217,6 +283,7 @@ public class ChatDetailActivity extends AppCompatActivity {
             }
         };
 
+
     }
     private void SpeakNow(View view){
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -286,5 +353,8 @@ public class ChatDetailActivity extends AppCompatActivity {
         // Remove the task from the handler if the activity is destroyed
         handler.removeCallbacks(task);
     }
+
+
+
 
 }
