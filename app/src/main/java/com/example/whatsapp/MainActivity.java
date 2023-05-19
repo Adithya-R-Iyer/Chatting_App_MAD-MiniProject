@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,18 +25,21 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-    FirebaseAuth auth;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    String senderUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        auth = FirebaseAuth.getInstance();
         setContentView(binding.getRoot());
 
         binding.viewPager.setAdapter(new FragmentsAdapter(getSupportFragmentManager()));
         binding.tabLayout.setupWithViewPager(binding.viewPager);
+
+        senderUid = auth.getUid();
 //        setOnlineStatus("online");
     }
 
@@ -62,11 +66,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.logout:
-                DatabaseReference ref= FirebaseDatabase.getInstance().getReference("Users").child(auth.getUid());
-                ref.child("online").setValue(String.valueOf(new Date().getTime()));
+
+//                database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
                 auth.signOut();
                 Intent intent2 = new Intent(MainActivity.this, SignInActivity.class);
+                intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent2);
+                finish();
                 break;
         }
 
@@ -99,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DatabaseReference ref= FirebaseDatabase.getInstance().getReference("Users").child(auth.getUid());
-        ref.child("online").setValue(String.valueOf(new Date().getTime()));
+        database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
     }
 }
