@@ -25,7 +25,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -77,6 +81,7 @@ public class SignInActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         progressDialog.dismiss();
                         if (task.isSuccessful()) {
+                            database.getReference().child("Users").child(auth.getUid()).child("online").setValue("online");
                             Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                             startActivity(intent);
                         } else {
@@ -149,7 +154,12 @@ public class SignInActivity extends AppCompatActivity {
                             users.setUserId(user.getUid());
                             users.setUserName(user.getDisplayName());
                             users.setProfilepic(user.getPhotoUrl().toString());
+                            users.setOnline("online");
+
                             database.getReference().child("Users").child(user.getUid()).setValue(users);
+//                            database.getReference().child("Users").child(user.getUid()).child("isOnline").setValue(true);
+//                            manageConnections();
+
 
                             Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                             startActivity(intent);
@@ -164,6 +174,36 @@ public class SignInActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    //HERE TO CHECK TO MANAGE CONNECTIONS
+    private void manageConnections(){
+//        database=FirebaseDatabase.getInstance();
+        final DatabaseReference connectionReference= database.getReference().child("connections");
+        final DatabaseReference lastconnected= database.getReference().child("lastConnected");
+        final DatabaseReference infoConnected= database.getReference("/");
+
+        infoConnected.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean connected=snapshot.getValue(Boolean.class);
+
+                if (connected){
+                    DatabaseReference con= connectionReference.child(auth.getCurrentUser().getUid());
+                    con.setValue(true);
+                    con.onDisconnect().setValue(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                System.out.println(error);
+            }
+        });
+
+
+
+
     }
 
 

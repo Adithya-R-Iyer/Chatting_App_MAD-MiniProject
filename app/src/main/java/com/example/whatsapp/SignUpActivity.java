@@ -49,7 +49,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                         progressDialog.dismiss();
                         if(task.isSuccessful()) {
-                            Users user = new Users(binding.etUserName.getText().toString(), binding.etEmail.getText().toString(), binding.etPassword.getText().toString());
+                            Users user = new Users(binding.etUserName.getText().toString(), binding.etEmail.getText().toString(), binding.etPassword.getText().toString(),"offline");
 
                             String id = task.getResult().getUser().getUid();
                             database.getReference().child("Users").child(id).setValue(user);
