@@ -121,7 +121,7 @@
             android:drawableLeft="@drawable/phone"
             android:drawablePadding="15dp"
             android:padding="15dp"
-            android:text="Audio"
+            android:text="Call"
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold"

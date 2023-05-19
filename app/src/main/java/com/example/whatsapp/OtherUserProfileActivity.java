@@ -34,8 +34,8 @@ public class OtherUserProfileActivity extends AppCompatActivity {
         database=FirebaseDatabase.getInstance();
 //        username=findViewById(R.id.user__Name);
         String receiverId = getIntent().getStringExtra("receiverId");
-        String profilepic = getIntent().getStringExtra("profilepic");
-
+        String profilePic = getIntent().getStringExtra("profilePic");
+        String userName = getIntent().getStringExtra("userName");
 
 
 
@@ -98,6 +98,9 @@ public class OtherUserProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent1=new Intent(OtherUserProfileActivity.this,ChatDetailActivity.class);
+                intent1.putExtra("receiverId",receiverId);
+                intent1.putExtra("profilePic",profilePic);
+                intent1.putExtra("userName",userName);
                 startActivity(intent1);
             }
         });

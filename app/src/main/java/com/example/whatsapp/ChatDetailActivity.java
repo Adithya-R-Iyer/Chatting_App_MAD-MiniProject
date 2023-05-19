@@ -93,7 +93,7 @@ public class ChatDetailActivity extends AppCompatActivity {
                 Intent intent=new Intent(ChatDetailActivity.this,OtherUserProfileActivity.class);
                 intent.putExtra("receiverId",receiverId);
                 intent.putExtra("profilePic",profilePic);
-
+                intent.putExtra("userName", userName);
                 startActivity(intent);
             }
         });
