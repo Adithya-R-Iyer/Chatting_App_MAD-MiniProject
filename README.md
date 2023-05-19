@@ -3,9 +3,12 @@ This is a Chatting application similar to whats app... but with more advanced an
 
 # Top 5 Badges
 
-## 1. GitHub Stats
+## 1. GitHub Stats - Adithya
 
-![Your Repository's Stats](https://github-readme-stats.vercel.app/api?username=Tanu-N-Prabhu&show_icons=true)
+![Your Repository's Stats](https://github-readme-stats.vercel.app/api?username=Adithya-R-Iyer&show_icons=true)
+## 1. GitHub Stats - Karthik
+
+![Your Repository's Stats](https://github-readme-stats.vercel.app/api?username=KarthikNaik-SCEM&show_icons=true)
 
 ## 2. Most Used Languages
 
