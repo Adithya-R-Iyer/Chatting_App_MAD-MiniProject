@@ -84,6 +84,22 @@ public class ChatDetailActivity extends AppCompatActivity {
             }
         });
 
+
+        //HERE SEEING OTHER'S PROFILE CODE
+
+        binding.userName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(ChatDetailActivity.this,OtherUserProfileActivity.class);
+                intent.putExtra("receiverId",receiverId);
+                intent.putExtra("profilePic",profilePic);
+
+                startActivity(intent);
+            }
+        });
+
+
+
         //HERE ONLINE CHECK
         database.getReference().child("Users").child(receiverId).child("online").addValueEventListener(new ValueEventListener() {
             @Override
@@ -92,7 +108,8 @@ public class ChatDetailActivity extends AppCompatActivity {
                     String online = snapshot.getValue(String.class);
                     if (online.equals("online")) {
                         onlineCheck.setText("ONLINE");
-                    } else {
+                    }
+                    else {
                         // User is offline
                         // Perform the desired action
                         long milli=Long.parseLong(online);
@@ -114,11 +131,11 @@ public class ChatDetailActivity extends AppCompatActivity {
 
                         if(currentDateString.equals(databaseDateString))
                         {
-                            onlineCheck.setText(timeString);
+                            onlineCheck.setText("Last active at "+timeString);
                         }
 
                         else{
-                            onlineCheck.setText(databaseDateString);
+                            onlineCheck.setText("Last active at "+databaseDateString);
                         }
 
 

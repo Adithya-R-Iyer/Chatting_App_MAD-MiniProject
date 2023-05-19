@@ -159,6 +159,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="TextView"
+                android:textColor="#EDEDED"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toBottomOf="@+id/userName" />
