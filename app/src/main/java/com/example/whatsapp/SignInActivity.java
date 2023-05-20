@@ -92,7 +92,9 @@ public class SignInActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             database.getReference().child("Users").child(auth.getUid()).child("online").setValue("online");
                             Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
+                            finish();
                         } else {
                             Toast.makeText(SignInActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
@@ -200,7 +202,9 @@ public class SignInActivity extends AppCompatActivity {
 
 
                             Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
+                            finish();
                             Toast.makeText(SignInActivity.this, "Signed In Successfully With Google", Toast.LENGTH_SHORT).show();
 //                            updateUI(user);
                         } else {
