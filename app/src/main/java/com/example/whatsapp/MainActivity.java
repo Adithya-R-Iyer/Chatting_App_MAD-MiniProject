@@ -65,6 +65,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent1);
                 break;
 
+            case R.id.chatBot:
+                Intent intent3 = new Intent(MainActivity.this, ChatBotActivity.class);
+                startActivity(intent3);
+                break;
+
             case R.id.logout:
 
 //                database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));

@@ -5,16 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grayBackground"
-    tools:context=".GroupChatActivity">
+    tools:context=".ChatBotActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/linear"
-        android:layout_below="@id/toolbar"
-        android:layout_marginTop="-3dp"
-        android:layout_marginBottom="3dp">
+        android:layout_below="@id/toolbar">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -158,6 +156,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.appcompat.widget.Toolbar>
-
 
 </RelativeLayout>
