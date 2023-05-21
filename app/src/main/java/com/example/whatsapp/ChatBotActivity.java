@@ -17,11 +17,6 @@ import android.view.View;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-//import com.android.volley.Request;
-//import com.android.volley.RequestQueue;
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.JsonObjectRequest;
-//import com.android.volley.toolbox.Volley;
 import com.example.whatsapp.API_Models.BrainShopMsgModel;
 import com.example.whatsapp.APIs.RetrofitAPI;
 import com.example.whatsapp.Adapters.ChatBotAdapter;
@@ -35,29 +30,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-//import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-//import okhttp3.Call;
-//import okhttp3.Callback;
-//import okhttp3.OkHttpClient;
-//import okhttp3.Request;
-//import okhttp3.Response;
 
 public class ChatBotActivity extends AppCompatActivity {
 
@@ -67,9 +48,6 @@ public class ChatBotActivity extends AppCompatActivity {
     String scheduled_message="";
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     final String chatBotUid = "Bot@01";
-//    private RequestQueue requestQueue;
-    // Create an OkHttpClient instance
-//    OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,12 +64,8 @@ public class ChatBotActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-//
-        final ArrayList<ChatBotMessageModel> messagesModels = new ArrayList<>();
-//        requestQueue = Volley.newRequestQueue(ChatBotActivity.this);
-//        requestQueue.getCache().clear();
-//        final ArrayList<String> userNames = new ArrayList<>();
 
+        final ArrayList<ChatBotMessageModel> messagesModels = new ArrayList<>();
         final String senderId = FirebaseAuth.getInstance().getUid();
         final String chatBotUid = "Bot@01";
         binding.userName.setText("My AI");
@@ -107,21 +81,20 @@ public class ChatBotActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 messagesModels.clear();
-
                 for(DataSnapshot dataSnapshot : snapshot.getChildren() ) {
                     ChatBotMessageModel model = dataSnapshot.getValue(ChatBotMessageModel.class);
                     model.setMessageId(String.valueOf(dataSnapshot.getKey()));
                     messagesModels.add(model);
                 }
-//                Log.d("userNames", messagesModels.get(1));
                 adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.e("adapterdebug", error.toString());
             }
         });
+
 
 
         binding.send.setOnClickListener(new View.OnClickListener() {

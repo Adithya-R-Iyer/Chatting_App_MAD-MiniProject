@@ -12,9 +12,13 @@ public class ChatBotMessageModel {
         this.uId = UId;
     }
 
-    public ChatBotMessageModel(String messageId, String uId) {
-        this.messageId = messageId;
+    public ChatBotMessageModel(String message, String uId) {
+        this.message = message;
         this.uId = uId;
+    }
+
+    public ChatBotMessageModel() {
+
     }
 
     public String getuId() {

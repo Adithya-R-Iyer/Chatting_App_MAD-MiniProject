@@ -3,6 +3,8 @@ package com.example.whatsapp.Adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +22,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ChatBotAdapter extends RecyclerView.Adapter{
+public class ChatBotAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    ArrayList<ChatBotMessageModel> messagesModels = new ArrayList<>();
+    ArrayList<ChatBotMessageModel> messagesModels;
     Context context;
     FirebaseAuth auth = FirebaseAuth.getInstance();
-    String recvId;
 
     int SENDER_VIEW_TYPE = 1;
     int RECEIVER_VIEW_TYPE = 2;
@@ -36,16 +37,11 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
         this.context = context;
     }
 
-//    public ChatBotAdapter(ArrayList<ChatBotMessageModel> messagesModels, Context context, String recvId) {
-//        this.messagesModels = messagesModels;
-//        this.context = context;
-//        this.recvId = recvId;
-//    }
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
+        Log.d("adapterdebug","Entered onCreateViewHolder");
         if(viewType == SENDER_VIEW_TYPE) {
             View view = LayoutInflater.from(context).inflate(R.layout.sample_sender, parent, false);
             return new SenderViewHolder(view);
@@ -57,27 +53,27 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         ChatBotMessageModel messageModel = messagesModels.get(position);
 
         //if the position of the array list is greater than or equal to 1 then ...get the details(date) of the previous message and check if both the messages are from the same day... if so return 1 else return 0
-//        if(position>=1){
-//            ChatBotMessageModel prevMessageModel = messagesModels.get(position-1);
-//
-//            Date thisDate = new Date(messagesModel.getTimestamp());
-//            Date prevDate = new Date(prevMessageModel.getTimestamp());
-//            SimpleDateFormat dateFormat0 = new SimpleDateFormat("dd/MM/yyyy");
-//            String thisDateString = dateFormat0.format(thisDate);
-//            String prevDateString = dateFormat0.format(prevDate);
-//
-//            if(thisDateString.equals(prevDateString)){
-//                flag=1; // true
-//            }
-//            else {
-//                flag=0; //false
-//            }
-//        }
+        if(position>=1){
+            ChatBotMessageModel prevMessageModel = messagesModels.get(position-1);
+
+            Date thisDate = new Date(messageModel.getTimestamp());
+            Date prevDate = new Date(prevMessageModel.getTimestamp());
+            SimpleDateFormat dateFormat0 = new SimpleDateFormat("dd/MM/yyyy");
+            String thisDateString = dateFormat0.format(thisDate);
+            String prevDateString = dateFormat0.format(prevDate);
+
+            if(thisDateString.equals(prevDateString)){
+                flag=1; // true
+            }
+            else {
+                flag=0; //false
+            }
+        }
 
         // Code To delete a message when user long clicks on any message
 
@@ -96,8 +92,7 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
 
                                 FirebaseAuth auth = FirebaseAuth.getInstance();
                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                String senderRoom = auth.getUid() + recvId;
-                                database.getReference().child("ChatBot").child(FirebaseAuth.getInstance().getUid()).child(messageModel.getMessageId()).setValue(null);
+                                database.getReference().child("ChatBot").child(auth.getUid()).child(messageModel.getMessageId()).setValue(null);
 
                             }
                         })
@@ -129,41 +124,45 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
         String currentDateString = dateFormat1.format(currentDate);
 
         if(holder.getClass() == SenderViewHolder.class) {
-            //Conditional Statement to Verify and display the dates accordingly
-//            if(currentDateString.equals(databaseDateString) && flag==0){
-//                ((SenderViewHolder)holder).etDate.setText("Today");
-//                ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-//            }
-//            else if(flag==1) {
-//                ((SenderViewHolder)holder).etDate.setVisibility(View.GONE);
-//                flag=0;
-//            }
-//            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
-//                ((SenderViewHolder)holder).etDate.setText(databaseDateString);
-//                ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-//            }
-
+//            Conditional Statement to Verify and display the dates accordingly
+            if(currentDateString.equals(databaseDateString) && flag==0){
+                ((SenderViewHolder)holder).etDate.setText("Today");
+                ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
+            }
+            else if(flag==1) {
+                ((SenderViewHolder)holder).etDate.setVisibility(View.GONE);
+                flag=0;
+            }
+            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
+                ((SenderViewHolder)holder).etDate.setText(databaseDateString);
+                ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
+            }
             ((SenderViewHolder)holder).senderText.setText(messageModel.getMessage());
             ((SenderViewHolder)holder).senderTime.setText(timeString);
         }
         else {
             //Conditional Statements to verify and display the dates accordingly
-//            if(currentDateString.equals(databaseDateString) && flag==0){
-//                ((ReceiverViewHolder)holder).etDate.setText("Today");
-//                ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-//            }
-//            else if(flag==1) {
-//                ((ReceiverViewHolder)holder).etDate.setVisibility(View.GONE);
-//                flag=0;
-//            }
-//            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
-//                ((ReceiverViewHolder)holder).etDate.setText(databaseDateString);
-//                ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-//            }
-
+            if(currentDateString.equals(databaseDateString) && flag==0){
+                ((ReceiverViewHolder)holder).etDate.setText("Today");
+                ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
+            }
+            else if(flag==1) {
+                ((ReceiverViewHolder)holder).etDate.setVisibility(View.GONE);
+                flag=0;
+            }
+            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
+                ((ReceiverViewHolder)holder).etDate.setText(databaseDateString);
+                ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
+            }
             ((ReceiverViewHolder)holder).userName.setText("Bot");
             ((ReceiverViewHolder)holder).receiverText.setText(messageModel.getMessage());
             ((ReceiverViewHolder)holder).receiverTime.setText(timeString);
+
+            View receiverUserNameView = ((ReceiverViewHolder)holder).userName;
+            ((TextView) receiverUserNameView).setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) receiverUserNameView.getLayoutParams();
+            layoutParams.leftMargin = 5;
+            receiverUserNameView.setLayoutParams(layoutParams);
         }
 
     }
