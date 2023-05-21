@@ -42,7 +42,7 @@
             android:layout_width="14dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@drawable/bxs_microphone" />
+            android:src="@drawable/bxs_microphone" />
 
         <ImageView
             android:id="@+id/send"
@@ -52,7 +52,7 @@
             android:layout_marginRight="4dp"
             android:layout_weight="0"
             android:backgroundTint="@color/colorPrimary"
-            app:srcCompat="@drawable/send_black" />
+            android:src="@drawable/send_black" />
     </LinearLayout>
 
     <androidx.appcompat.widget.Toolbar
@@ -76,8 +76,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/leftarrow"
-                app:tint="@color/white" />
+                android:src="@drawable/leftarrow" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profileImage"
@@ -99,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:text="Joe Root"
                 android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
@@ -115,8 +114,8 @@
                 app:layout_constraintEnd_toStartOf="@+id/imageView4"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.5"
-                app:srcCompat="@drawable/phone"
-                app:tint="@color/white" />
+                android:src="@drawable/phone"
+                />
 
             <ImageView
                 android:id="@+id/imageView4"
@@ -127,8 +126,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/imageView5"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.5"
-                app:srcCompat="@drawable/facetime"
-                app:tint="@color/white" />
+                android:src="@drawable/facetime" />
 
             <ImageView
                 android:id="@+id/imageView5"
@@ -139,10 +137,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.5"
-                app:srcCompat="@drawable/menu"
-                app:tint="@color/white" />
+                android:src="@drawable/menu" />
 
-            <ImageView
+                <ImageView
                 android:id="@+id/scheduledMessage"
                 android:layout_width="33dp"
                 android:layout_height="29dp"
@@ -151,10 +148,10 @@
                 app:layout_constraintHorizontal_bias="0.802"
                 app:layout_constraintStart_toEndOf="@+id/userName"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/sheduled_message" />
+                android:src="@drawable/sheduled_message" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.appcompat.widget.Toolbar>
-
 </RelativeLayout>

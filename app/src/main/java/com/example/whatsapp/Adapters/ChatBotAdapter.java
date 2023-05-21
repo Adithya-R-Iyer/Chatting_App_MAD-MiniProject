@@ -12,21 +12,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whatsapp.Models.ChatBotMessageModel;
-import com.example.whatsapp.Models.MessagesModel;
 import com.example.whatsapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class ChatBotAdapter extends RecyclerView.Adapter{
 
-    ArrayList<ChatBotMessageModel> messagesModels;
+    ArrayList<ChatBotMessageModel> messagesModels = new ArrayList<>();
     Context context;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String recvId;
@@ -63,27 +59,30 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        ChatBotMessageModel messagesModel = messagesModels.get(position);
+        ChatBotMessageModel messageModel = messagesModels.get(position);
 
         //if the position of the array list is greater than or equal to 1 then ...get the details(date) of the previous message and check if both the messages are from the same day... if so return 1 else return 0
-        if(position>=1){
-            ChatBotMessageModel prevMessageModel = messagesModels.get(position-1);
-
-            Date thisDate = new Date(messagesModel.getTimestamp());
-            Date prevDate = new Date(prevMessageModel.getTimestamp());
-            SimpleDateFormat dateFormat0 = new SimpleDateFormat("dd/MM/yyyy");
-            String thisDateString = dateFormat0.format(thisDate);
-            String prevDateString = dateFormat0.format(prevDate);
-
-            if(thisDateString.equals(prevDateString)){
-                flag=1; // true
-            }
-            else {
-                flag=0; //false
-            }
-        }
+//        if(position>=1){
+//            ChatBotMessageModel prevMessageModel = messagesModels.get(position-1);
+//
+//            Date thisDate = new Date(messagesModel.getTimestamp());
+//            Date prevDate = new Date(prevMessageModel.getTimestamp());
+//            SimpleDateFormat dateFormat0 = new SimpleDateFormat("dd/MM/yyyy");
+//            String thisDateString = dateFormat0.format(thisDate);
+//            String prevDateString = dateFormat0.format(prevDate);
+//
+//            if(thisDateString.equals(prevDateString)){
+//                flag=1; // true
+//            }
+//            else {
+//                flag=0; //false
+//            }
+//        }
 
         // Code To delete a message when user long clicks on any message
+
+
+
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -98,7 +97,7 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
                                 FirebaseAuth auth = FirebaseAuth.getInstance();
                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                                 String senderRoom = auth.getUid() + recvId;
-                                database.getReference().child("ChatBot").child(messagesModel.getMessageId()).setValue(null);
+                                database.getReference().child("ChatBot").child(FirebaseAuth.getInstance().getUid()).child(messageModel.getMessageId()).setValue(null);
 
                             }
                         })
@@ -115,7 +114,7 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
 
         //CONVERSION OF TIMESTAMP TO DATE :- HH:mm
         // Create a new Date object using the timestamp
-        long databaseTimeStamp = messagesModel.getTimestamp();
+        long databaseTimeStamp = messageModel.getTimestamp();
         Date databaseDate = new Date(databaseTimeStamp);
         // Create a SimpleDateFormat object to format the date as "HH:mm"
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
@@ -129,58 +128,41 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
         Date currentDate = new Date(currentTimeStamp);
         String currentDateString = dateFormat1.format(currentDate);
 
-//        Instant timestamp1 = null;
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            timestamp1 = Instant.ofEpochMilli(databaseTimeStamp);
-//        }
-//        Instant timestamp2 = null;
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            timestamp2 = Instant.ofEpochMilli(currentTimeStamp);
-//        }
-//
-//        LocalDate date1 = null;
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            date1 = timestamp1.atZone(ZoneId.systemDefault()).toLocalDate();
-//        }
-//        LocalDate date2 = null;
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            date2 = timestamp2.atZone(ZoneId.systemDefault()).toLocalDate();
-//        }
-
         if(holder.getClass() == SenderViewHolder.class) {
             //Conditional Statement to Verify and display the dates accordingly
-            if(currentDateString.equals(databaseDateString) && flag==0){
-                ((SenderViewHolder)holder).etDate.setText("Today");
-                ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-            }
-            else if(flag==1) {
-                ((SenderViewHolder)holder).etDate.setVisibility(View.GONE);
-                flag=0;
-            }
-            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
-                ((SenderViewHolder)holder).etDate.setText(databaseDateString);
-                ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-            }
+//            if(currentDateString.equals(databaseDateString) && flag==0){
+//                ((SenderViewHolder)holder).etDate.setText("Today");
+//                ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
+//            }
+//            else if(flag==1) {
+//                ((SenderViewHolder)holder).etDate.setVisibility(View.GONE);
+//                flag=0;
+//            }
+//            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
+//                ((SenderViewHolder)holder).etDate.setText(databaseDateString);
+//                ((SenderViewHolder)holder).etDate.setVisibility(View.VISIBLE);
+//            }
 
-            ((SenderViewHolder)holder).senderText.setText(messagesModel.getMessage());
+            ((SenderViewHolder)holder).senderText.setText(messageModel.getMessage());
             ((SenderViewHolder)holder).senderTime.setText(timeString);
         }
         else {
             //Conditional Statements to verify and display the dates accordingly
-            if(currentDateString.equals(databaseDateString) && flag==0){
-                ((ReceiverViewHolder)holder).etDate.setText("Today");
-                ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-            }
-            else if(flag==1) {
-                ((ReceiverViewHolder)holder).etDate.setVisibility(View.GONE);
-                flag=0;
-            }
-            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
-                ((ReceiverViewHolder)holder).etDate.setText(databaseDateString);
-                ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
-            }
+//            if(currentDateString.equals(databaseDateString) && flag==0){
+//                ((ReceiverViewHolder)holder).etDate.setText("Today");
+//                ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
+//            }
+//            else if(flag==1) {
+//                ((ReceiverViewHolder)holder).etDate.setVisibility(View.GONE);
+//                flag=0;
+//            }
+//            else if((!currentDateString.equals(databaseDateString)) && (flag==0)) {
+//                ((ReceiverViewHolder)holder).etDate.setText(databaseDateString);
+//                ((ReceiverViewHolder)holder).etDate.setVisibility(View.VISIBLE);
+//            }
 
-            ((ReceiverViewHolder)holder).receiverText.setText(messagesModel.getMessage());
+            ((ReceiverViewHolder)holder).userName.setText("Bot");
+            ((ReceiverViewHolder)holder).receiverText.setText(messageModel.getMessage());
             ((ReceiverViewHolder)holder).receiverTime.setText(timeString);
         }
 
@@ -207,7 +189,7 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
         return messagesModels.size();
     }
 
-    public class ReceiverViewHolder extends RecyclerView.ViewHolder {
+    public static class ReceiverViewHolder extends RecyclerView.ViewHolder {
 
         TextView receiverText, receiverTime, etDate, userName;
 
@@ -221,7 +203,7 @@ public class ChatBotAdapter extends RecyclerView.Adapter{
         }
     }
 
-    public class SenderViewHolder extends RecyclerView.ViewHolder {
+    public static class SenderViewHolder extends RecyclerView.ViewHolder {
 
         TextView senderText, senderTime, etDate;
 

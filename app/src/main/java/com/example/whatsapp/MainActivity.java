@@ -84,6 +84,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //what happens when mobile back button is pressed
+    @Override
+    public void onBackPressed() {
+        // Close the app completely
+        database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
+        finish();
+//        System.exit(0);
+    }
+
+
 //    private void setOnlineStatus(String online){
 //        DatabaseReference ref= FirebaseDatabase.getInstance().getReference("Users").child(auth.getUid());
 //        HashMap<String,Object> hashMap=new HashMap<>();

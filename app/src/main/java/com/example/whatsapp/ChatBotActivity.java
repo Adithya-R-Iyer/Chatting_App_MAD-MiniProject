@@ -1,5 +1,7 @@
 package com.example.whatsapp;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,15 +12,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+//import com.android.volley.Request;
+//import com.android.volley.RequestQueue;
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.JsonObjectRequest;
+//import com.android.volley.toolbox.Volley;
 import com.example.whatsapp.API_Models.BrainShopMsgModel;
 import com.example.whatsapp.APIs.RetrofitAPI;
 import com.example.whatsapp.Adapters.ChatBotAdapter;
 import com.example.whatsapp.Models.ChatBotMessageModel;
 import com.example.whatsapp.databinding.ActivityChatBotBinding;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,15 +35,29 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+//import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+//import okhttp3.Call;
+//import okhttp3.Callback;
+//import okhttp3.OkHttpClient;
+//import okhttp3.Request;
+//import okhttp3.Response;
 
 public class ChatBotActivity extends AppCompatActivity {
 
@@ -44,6 +67,9 @@ public class ChatBotActivity extends AppCompatActivity {
     String scheduled_message="";
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     final String chatBotUid = "Bot@01";
+//    private RequestQueue requestQueue;
+    // Create an OkHttpClient instance
+//    OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +86,14 @@ public class ChatBotActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+//
         final ArrayList<ChatBotMessageModel> messagesModels = new ArrayList<>();
+//        requestQueue = Volley.newRequestQueue(ChatBotActivity.this);
+//        requestQueue.getCache().clear();
 //        final ArrayList<String> userNames = new ArrayList<>();
 
         final String senderId = FirebaseAuth.getInstance().getUid();
-//        final String chatBotUid = "Bot@01";
+        final String chatBotUid = "Bot@01";
         binding.userName.setText("My AI");
 
         final ChatBotAdapter adapter = new ChatBotAdapter(messagesModels, this);
@@ -75,30 +103,14 @@ public class ChatBotActivity extends AppCompatActivity {
         binding.chatRecyclerView.setLayoutManager(layoutManager);
 
 
-        database.getReference().child("ChatBot").addValueEventListener(new ValueEventListener() {
+        database.getReference().child("ChatBot").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 messagesModels.clear();
 
                 for(DataSnapshot dataSnapshot : snapshot.getChildren() ) {
                     ChatBotMessageModel model = dataSnapshot.getValue(ChatBotMessageModel.class);
-                    model.setMessageId(dataSnapshot.getKey());
-
-//                    database.getReference().child("Users").child(model.getuId()).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                            String username = snapshot.getValue(String.class);
-////                            userNames.add(username);
-//                            model.setUserName(username);
-////                            Log.d("msg","entered" + model.getUserName());
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError error) {
-//
-//                        }
-//                    });
-
+                    model.setMessageId(String.valueOf(dataSnapshot.getKey()));
                     messagesModels.add(model);
                 }
 //                Log.d("userNames", messagesModels.get(1));
@@ -123,23 +135,33 @@ public class ChatBotActivity extends AppCompatActivity {
 
                 final String message = binding.etMessage.getText().toString();
 
-                final ChatBotMessageModel model = new ChatBotMessageModel(senderId, message);
+                final ChatBotMessageModel model = new ChatBotMessageModel(message, senderId);
                 model.setTimestamp(new Date().getTime());
 
                 binding.etMessage.setText("");
 
-                database.getReference().child("ChatBot").push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+                Log.d("decodetest","pushing sender message to database");
+                database.getReference().child("ChatBot").child(FirebaseAuth.getInstance().getUid()).push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-
+                        //Code to send User's message to chatbot and receive reply from chatbot
+                        Log.d("decodetest","getResponse() method called");
+                        getResponse(message);
+                        Log.d("decodetest","getResponse() execution complete");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Failure callback
+                        Log.e("decodetest", "onFailure: " + e.getMessage());
                     }
                 });
-
-                //Code to send User's message to chatbot and receive reply from chatbot
-                getResponse(message);
-
+                Log.d("decodetest","function call");
+//                getResponse(message);
             }
         });
+
 
         binding.speechToText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,12 +220,12 @@ public class ChatBotActivity extends AppCompatActivity {
 
                 String message = scheduled_message;
 
-                final ChatBotMessageModel messagesModel = new ChatBotMessageModel(senderId ,message);
+                final ChatBotMessageModel messagesModel = new ChatBotMessageModel(message, senderId);
                 messagesModel.setTimestamp(new Date().getTime());
 
 
                 // Here .push() ensures that a new Id is created with the help of the TimeStamp ...whenever a new message is sent -> Push is usually used to create unique id's
-                database.getReference().child("ChatBot").push().setValue(messagesModel).addOnSuccessListener(new OnSuccessListener<Void>() {
+                database.getReference().child("ChatBot").child(FirebaseAuth.getInstance().getUid()).push().setValue(messagesModel).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
 
@@ -230,7 +252,7 @@ public class ChatBotActivity extends AppCompatActivity {
         }
     }
 
-    //method to calculate the delay of after how much time the message should be sent
+//    //method to calculate the delay of after how much time the message should be sent
     private long calculateDelay(int hours,int minutes) {
         // Calculate the delay until the desired time (1:30)
         long currentTimeMillis = System.currentTimeMillis();
@@ -283,19 +305,20 @@ public class ChatBotActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
-        Call<BrainShopMsgModel> call = retrofitAPI.getMessage(url);
+        Call<BrainShopMsgModel> call = retrofitAPI.getMessage(175414, "sgRtUAfnFLrOcMq5", "["+ FirebaseAuth.getInstance().getUid() +"]", message);
         call.enqueue(new Callback<BrainShopMsgModel>() {
             @Override
             public void onResponse(Call<BrainShopMsgModel> call, Response<BrainShopMsgModel> response) {
-                if(response.isSuccessful()){
+                if(response.isSuccessful()) {
                     BrainShopMsgModel brainShopMsgModel = response.body();
-                    ChatBotMessageModel model1 = new ChatBotMessageModel(chatBotUid, brainShopMsgModel.getCnt());
+                    ChatBotMessageModel model1 = new ChatBotMessageModel(brainShopMsgModel.getCnt(),chatBotUid);
                     model1.setTimestamp(new Date().getTime());
 
-                    database.getReference().child("ChatBot").push().setValue(model1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    Log.d("decodetest","entered -> response successful");
+                    database.getReference().child("ChatBot").child(FirebaseAuth.getInstance().getUid()).push().setValue(model1).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-
+                            Log.d("decodetest","response stored in database");
                         }
                     });
                 }
@@ -304,10 +327,11 @@ public class ChatBotActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<BrainShopMsgModel> call, Throwable t) {
 
-                ChatBotMessageModel model2 = new ChatBotMessageModel(chatBotUid, "Please Revert Your Question");
+                Log.e("decodetest","Error Occured", t);
+                ChatBotMessageModel model2 = new ChatBotMessageModel("Please Revert Your Question", chatBotUid);
                 model2.setTimestamp(new Date().getTime());
 
-                database.getReference().child("ChatBot").push().setValue(model2).addOnSuccessListener(new OnSuccessListener<Void>() {
+                database.getReference().child("ChatBot").child(FirebaseAuth.getInstance().getUid()).push().setValue(model2).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
 

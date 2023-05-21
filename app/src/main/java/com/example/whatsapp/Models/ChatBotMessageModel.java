@@ -12,8 +12,8 @@ public class ChatBotMessageModel {
         this.uId = UId;
     }
 
-    public ChatBotMessageModel(String uId, String message) {
-        this.message = message;
+    public ChatBotMessageModel(String messageId, String uId) {
+        this.messageId = messageId;
         this.uId = uId;
     }
 
