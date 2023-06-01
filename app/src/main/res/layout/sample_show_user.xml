@@ -44,6 +44,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="10dp"
                 android:textAlignment="viewEnd"
+                android:textColorHint="#4B4747"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -51,9 +52,10 @@
             android:id="@+id/lastMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="last message"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
-            android:text="Last Message" />
+            android:textColorHint="#4B4747" />
     </LinearLayout>
 
 </LinearLayout>

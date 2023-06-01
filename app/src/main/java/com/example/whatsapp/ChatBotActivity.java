@@ -201,7 +201,7 @@ public class ChatBotActivity extends AppCompatActivity {
                 database.getReference().child("ChatBot").child(FirebaseAuth.getInstance().getUid()).push().setValue(messagesModel).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-
+                        getResponse(message);
                     }
                 });
 
