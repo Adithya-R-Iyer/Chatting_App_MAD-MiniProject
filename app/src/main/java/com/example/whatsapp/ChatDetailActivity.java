@@ -3,10 +3,12 @@ package com.example.whatsapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
@@ -39,6 +41,8 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.Manifest;
+
 public class ChatDetailActivity extends AppCompatActivity {
 
     ActivityChatDetailBinding binding;
@@ -50,7 +54,12 @@ public class ChatDetailActivity extends AppCompatActivity {
     private Handler handler;
     private Runnable task;
 
-
+    //RTC Voice and Video Call Support Variable Declarations
+    String[] permissions = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO
+    };
+    int requestCode = 1;
 
 
     @Override
@@ -300,10 +309,38 @@ public class ChatDetailActivity extends AppCompatActivity {
             }
         };
 
-        //CODE TO ENABLE AUDIO AND VEDIO CALLING
+        //CODE TO ENABLE AUDIO AND VIDEO CALLING
+        if(!isPermissionGranted()) {
+            askPermissions();
+        }
 
+        binding.btnVideoCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(ChatDetailActivity.this,VideoCallActivity.class);
+                intent.putExtra("receiverId",receiverId);
+                intent.putExtra("profilePic",profilePic);
+                intent.putExtra("userName", userName);
+                startActivity(intent);
+            }
+        });
 
     }
+
+    private boolean isPermissionGranted() {
+
+        for(String permission : permissions ) {
+            if(ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void askPermissions() {
+        ActivityCompat.requestPermissions(this, permissions, requestCode);
+    }
+
     private void SpeakNow(View view){
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
