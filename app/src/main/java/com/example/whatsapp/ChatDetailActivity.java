@@ -300,6 +300,8 @@ public class ChatDetailActivity extends AppCompatActivity {
             }
         };
 
+        //CODE TO ENABLE AUDIO AND VEDIO CALLING
+
 
     }
     private void SpeakNow(View view){
