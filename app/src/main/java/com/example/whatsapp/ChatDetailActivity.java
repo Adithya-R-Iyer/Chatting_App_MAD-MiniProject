@@ -317,7 +317,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         binding.btnVideoCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(ChatDetailActivity.this,VideoCallActivity.class);
+               Intent intent=new Intent(ChatDetailActivity.this,VideoCallActivity.class);
                 intent.putExtra("receiverId",receiverId);
                 intent.putExtra("profilePic",profilePic);
                 intent.putExtra("userName", userName);

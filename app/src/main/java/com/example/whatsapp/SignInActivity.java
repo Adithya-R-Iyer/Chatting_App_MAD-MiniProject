@@ -195,6 +195,9 @@ public class SignInActivity extends AppCompatActivity {
                                         }
                                     });
                             users.setOnline("online");
+                            users.setIncomingVideoCall("null");
+                            users.setAvailableForCalls(false);
+                            users.setCallConnectionId("null");
 
                             database.getReference().child("Users").child(user.getUid()).setValue(users);
 //                            database.getReference().child("Users").child(user.getUid()).child("isOnline").setValue(true);

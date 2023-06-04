@@ -1,9 +1,10 @@
 package com.example.whatsapp.Models;
 
 public class Users {
-    String profilepic, userName, mail, password, userId, lastMessage, status,online;
+    String profilepic, userName, mail, password, userId, lastMessage, status, online, incomingVideoCall, callConnectionId;
+    Boolean isAvailableForCalls;
 
-    public Users(String profilepic, String userName, String mail, String password, String userId, String lastMessage, String status, String online) {
+    public Users(String profilepic, String userName, String mail, String password, String userId, String lastMessage, String status, String online, String incomingVideoCall, String callConnectionId, Boolean isAvailableForCalls) {
         this.profilepic = profilepic;
         this.userName = userName;
         this.mail = mail;
@@ -11,17 +12,47 @@ public class Users {
         this.userId = userId;
         this.lastMessage = lastMessage;
         this.status = status;
-        this.online=online;
+        this.online = online;
+        this.incomingVideoCall = incomingVideoCall;
+        this.callConnectionId = callConnectionId;
+        this.isAvailableForCalls = isAvailableForCalls;
     }
 
     public Users() {}
 
     // SignUp Constructor
-    public Users(String userName, String mail, String password,String online) {
+    public Users(String userName, String mail, String password,String online, String incomingVideoCall, String callConnectionId, Boolean isAvailableForCalls) {
         this.userName = userName;
         this.mail = mail;
         this.password = password;
         this.online=online;
+        this.incomingVideoCall = incomingVideoCall;
+        this.callConnectionId = callConnectionId;
+        this.isAvailableForCalls = isAvailableForCalls;
+    }
+
+    public String getCallConnectionId() {
+        return callConnectionId;
+    }
+
+    public void setCallConnectionId(String callConnectionId) {
+        this.callConnectionId = callConnectionId;
+    }
+
+    public Boolean getAvailableForCalls() {
+        return isAvailableForCalls;
+    }
+
+    public void setAvailableForCalls(Boolean availableForCalls) {
+        isAvailableForCalls = availableForCalls;
+    }
+
+    public String getIncomingVideoCall() {
+        return incomingVideoCall;
+    }
+
+    public void setIncomingVideoCall(String incomingVideoCall) {
+        this.incomingVideoCall = incomingVideoCall;
     }
 
     public String getStatus() {

@@ -33,7 +33,6 @@ function init(userId) {
     peer.on('open', () => {
         console.log('Connected to PeerJS server');
 
-        
         localVideo = document.getElementById('local-video');
         remoteVideo = document.getElementById('remote-video');
 
@@ -46,6 +45,8 @@ function init(userId) {
         remoteVideo.onplaying = ()=>{
             remoteVideo.style.opacity = 1;
         }
+
+        AndroidInterface.onPeerConnected();
         
     });
     
@@ -53,10 +54,6 @@ function init(userId) {
 }
 
 function listen() {
-
-    
-    // var localVideo = document.getElementById('local-video');
-    // var remoteVideo = document.getElementById('remote-video');
 
     // Listen for incoming calls
     peer.on('call', (call) => {
@@ -89,10 +86,6 @@ function listen() {
 
 // Make a call to another user
 function startCall(otherUserId) {
-
-    
-    // var localVideo = document.getElementById('local-video');
-    // var remoteVideo = document.getElementById('remote-video');
 
   // Get the user media
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
