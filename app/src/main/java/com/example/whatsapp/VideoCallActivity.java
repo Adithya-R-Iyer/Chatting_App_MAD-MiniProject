@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 public class VideoCallActivity extends AppCompatActivity {
 
@@ -62,6 +63,13 @@ public class VideoCallActivity extends AppCompatActivity {
                 database.getReference().child("Users").child(senderId).child("callConnectionId").setValue("null");
                 database.getReference().child("Users").child(receiverId).child("callConnectionId").setValue("null");
                 database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(false);
+                database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue("null");
+
+                Intent intent = new Intent(VideoCallActivity.this, ChatDetailActivity.class);
+                intent.putExtra("receiverId", receiverId);
+                intent.putExtra("userName", userName);
+                intent.putExtra("profilePic", profilePic);
+                startActivity(intent);
             }
         });
 
@@ -69,7 +77,7 @@ public class VideoCallActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 isVideo = !isVideo;
-                callJavaScriptFunction("toggleVideo(" + isVideo + ")");
+                callJavaScriptFunction("toggleVideo('" + isVideo + "')");
                 if (isVideo) {
                     binding.btnCameraOff.setImageResource(R.drawable.camera_off_whitebg);
                 } else {
@@ -82,7 +90,7 @@ public class VideoCallActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 isAudio = !isAudio;
-                callJavaScriptFunction("toggleAudio(" + isAudio + ")");
+                callJavaScriptFunction("toggleAudio('" + isAudio + "')");
                 if (isAudio) {
                     binding.btnMicOff.setImageResource(R.drawable.mic_off_whitebg);
                 } else {
@@ -97,23 +105,24 @@ public class VideoCallActivity extends AppCompatActivity {
     private void makeCall() {
 
         if(isPeerConnected){
-            database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue(auth.getUid()); //Notify Receiver Who the Caller Is??
-            database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(snapshot.getValue(Boolean.class).toString().equals("true")){
-                        Log.d("vcDebug","Receiver Accepted the call... isAvailableForCalls listener worked");
-                        database.getReference().child("Users").child(senderId).child("callConnectionId").setValue(senderId+receiverId);
-                        switchToControls();
-                        callJavaScriptFunction("startCall(" + receiverId + ")");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+            callJavaScriptFunction("startCall(" + 1 + ")");
+//            database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue(auth.getUid()); //Notify Receiver Who the Caller Is??
+//            database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                    if(snapshot.getValue(Boolean.class).toString().equals("true")){
+//                        Log.d("vcDebug","Receiver Accepted the call... isAvailableForCalls listener worked");
+//                        database.getReference().child("Users").child(senderId).child("callConnectionId").setValue(senderId+receiverId);
+////                        switchToControls();
+//                        callJavaScriptFunction("startCall(" + receiverId + ")");
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//
+//                }
+//            });
         }
         else{
             Toast.makeText(this, "You're not connected. Check your internet", Toast.LENGTH_LONG).show();
@@ -179,30 +188,33 @@ public class VideoCallActivity extends AppCompatActivity {
 
     private void initializePeer() {
 
-//            callJavaScriptFunction("init(" + senderId + ")");
-//        boolean isInitCalled = (boolean) binding.webView.evaluateJavascript("callJavaScriptFunction('init(" + senderId + ")')", null);
+//      callJavaScriptFunction("init(" + senderId + ")");
+//      boolean isInitCalled = (boolean) binding.webView.evaluateJavascript("callJavaScriptFunction('init(" + senderId + ")')", null);
         binding.webView.evaluateJavascript("init('" + senderId + "')", null);
         Log.d("vcDebug","JavaScript init function called");
-            onPeerConnected();
-            Log.d("vcDebug","" + isPeerConnected);
-            makeCall();
-            Log.d("vcDebug","makeCall function executed");
-            database.getReference().child("Users").child(senderId).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String callerId = snapshot.getValue(String.class);
-                    Log.d("vcDebug","onCallRequest method starting...");
-                    Intent intent = new Intent(VideoCallActivity.this, VideoCallReceiveActivity.class);
-                    intent.putExtra("callerId", callerId);
-//                    onCallRequest(snapshot.getValue(String.class));
-                    Log.d("vcDebug","onCallRequest method executed...");
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+        onPeerConnected();
+        Log.d("vcDebug","" + isPeerConnected);
+          makeCall();
+          Log.d("vcDebug","makeCall function executed");
+//        database.getReference().child("Users").child(senderId).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                String callerId = snapshot.getValue(String.class);
+//                if(!Objects.equals(callerId, "null")) {
+//                    Log.d("vcDebug","onCallRequest method starting...");
+//                    Intent intent = new Intent(VideoCallActivity.this, VideoCallReceiveActivity.class);
+//                    intent.putExtra("callerId", callerId);
+//                    startActivity(intent);
+////                    onCallRequest(snapshot.getValue(String.class));
+//                    Log.d("vcDebug","onCallRequest method executed...");
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
     }
 
 //    private void onCallRequest(String callerId) {
@@ -231,9 +243,9 @@ public class VideoCallActivity extends AppCompatActivity {
 //        }
 //    }
 
-    private void switchToControls() {
-        binding.callControlLayout.setVisibility(View.VISIBLE);
-    }
+//    private void switchToControls() {
+//        binding.callControlLayout.setVisibility(View.VISIBLE);
+//    }
 
     private void callJavaScriptFunction(String functionName) {
 
@@ -247,26 +259,26 @@ public class VideoCallActivity extends AppCompatActivity {
     }
 
     // Helper method to convert InputStream to File
-    private File convertInputStreamToFile(InputStream inputStream) throws IOException {
-
-        WebSettings webSettings = binding.webView.getSettings();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            webSettings.setAllowFileAccessFromFileURLs(true);
-            webSettings.setAllowUniversalAccessFromFileURLs(true);
-        }
-
-        File file = new File(getCacheDir(), "temp.html");
-        FileOutputStream outputStream = new FileOutputStream(file);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, length);
-        }
-        outputStream.flush();
-        outputStream.close();
-        inputStream.close();
-        return file;
-    }
+//    private File convertInputStreamToFile(InputStream inputStream) throws IOException {
+//
+//        WebSettings webSettings = binding.webView.getSettings();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//            webSettings.setAllowFileAccessFromFileURLs(true);
+//            webSettings.setAllowUniversalAccessFromFileURLs(true);
+//        }
+//
+//        File file = new File(getCacheDir(), "temp.html");
+//        FileOutputStream outputStream = new FileOutputStream(file);
+//        byte[] buffer = new byte[1024];
+//        int length;
+//        while ((length = inputStream.read(buffer)) != -1) {
+//            outputStream.write(buffer, 0, length);
+//        }
+//        outputStream.flush();
+//        outputStream.close();
+//        inputStream.close();
+//        return file;
+//    }
 
 
     private static class CustomWebChromeClient extends WebChromeClient {

@@ -7,6 +7,7 @@
     tools:context=".VideoCallReceiveActivity">
 
     <RelativeLayout
+        android:id="@+id/videoCallLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
@@ -87,6 +88,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/videoCallReceiveLayout"
         android:visibility="visible">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -123,7 +125,7 @@
                 android:layout_marginStart="96dp"
                 android:layout_marginTop="10dp"
                 android:padding="11dp"
-                android:src="@drawable/volume_off"
+                android:src="@drawable/volume_up"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="#42B90F" />

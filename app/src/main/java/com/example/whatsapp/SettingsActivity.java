@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -52,6 +54,27 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        //Incoming VideoCall Code
+        database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String callerId = snapshot.getValue(String.class);
+                if(!Objects.equals(callerId, "null")) {
+                    Log.d("vcDebug","onCallRequest method starting...");
+                    Intent intent = new Intent(SettingsActivity.this, VideoCallReceiveActivity.class);
+                    intent.putExtra("callerId", callerId);
+                    startActivity(intent);
+//                    onCallRequest(snapshot.getValue(String.class));
+                    Log.d("vcDebug","onCallRequest method executed...");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 

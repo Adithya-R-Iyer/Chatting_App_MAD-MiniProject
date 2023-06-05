@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -47,6 +48,26 @@ public class OtherUserProfileActivity extends AppCompatActivity {
         String profilePic = getIntent().getStringExtra("profilePic");
         String userName = getIntent().getStringExtra("userName");
 
+        //Incoming VideoCall Code
+        database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String callerId = snapshot.getValue(String.class);
+                if(!Objects.equals(callerId, "null")) {
+                    Log.d("vcDebug","onCallRequest method starting...");
+                    Intent intent = new Intent(OtherUserProfileActivity.this, VideoCallReceiveActivity.class);
+                    intent.putExtra("callerId", callerId);
+                    startActivity(intent);
+//                    onCallRequest(snapshot.getValue(String.class));
+                    Log.d("vcDebug","onCallRequest method executed...");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
 
         database.getReference().child("Users").child(receiverId).addListenerForSingleValueEvent(new ValueEventListener() {

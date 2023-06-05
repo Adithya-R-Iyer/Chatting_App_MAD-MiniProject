@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -90,6 +92,27 @@ public class ChatDetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ChatDetailActivity.this, MainActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        //Incoming VideoCall Code
+        database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String callerId = snapshot.getValue(String.class);
+                if(!Objects.equals(callerId, "null")) {
+                    Log.d("vcDebug","onCallRequest method starting...");
+                    Intent intent = new Intent(ChatDetailActivity.this, VideoCallReceiveActivity.class);
+                    intent.putExtra("callerId", callerId);
+                    startActivity(intent);
+//                    onCallRequest(snapshot.getValue(String.class));
+                    Log.d("vcDebug","onCallRequest method executed...");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 
