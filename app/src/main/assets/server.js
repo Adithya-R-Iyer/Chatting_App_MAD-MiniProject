@@ -59,6 +59,7 @@ function init(userId) {
 function listen() {
 
     // Listen for incoming calls
+    console.log("listen called");
     peer.on('call', (call) => {
       // Answer the call and get the user media
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -71,6 +72,7 @@ function listen() {
 
           // Answer the call by sending our stream
           call.answer(stream);
+          console.log("call answered");
     
           // Listen for the 'stream' event to get the remote stream
           call.on('stream', (remoteStream) => {

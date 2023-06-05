@@ -3,18 +3,17 @@ package com.example.whatsapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.View;
 
-import com.example.whatsapp.databinding.ActivityCallReceiveBinding;
+import com.example.whatsapp.databinding.ActivityVideoCallReceiveBinding;
 
-public class CallReceiveActivity extends AppCompatActivity {
+public class VideoCallReceiveActivity extends AppCompatActivity {
 
-    ActivityCallReceiveBinding binding;
+    ActivityVideoCallReceiveBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        binding = ActivityCallReceiveBinding.inflate(getLayoutInflater());
+        binding = ActivityVideoCallReceiveBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
         setContentView(binding.getRoot());
 
@@ -46,4 +45,16 @@ public class CallReceiveActivity extends AppCompatActivity {
 //            });
 //        }
 //    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        binding.webView.loadUrl("about:blank");
+        super.onDestroy();
+    }
 }

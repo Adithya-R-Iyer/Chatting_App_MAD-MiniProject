@@ -4,10 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.webkit.PermissionRequest;
@@ -194,7 +192,7 @@ public class VideoCallActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String callerId = snapshot.getValue(String.class);
                     Log.d("vcDebug","onCallRequest method starting...");
-                    Intent intent = new Intent(VideoCallActivity.this, CallReceiveActivity.class);
+                    Intent intent = new Intent(VideoCallActivity.this, VideoCallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
 //                    onCallRequest(snapshot.getValue(String.class));
                     Log.d("vcDebug","onCallRequest method executed...");
@@ -207,31 +205,31 @@ public class VideoCallActivity extends AppCompatActivity {
             });
     }
 
-    private void onCallRequest(String callerId) {
-        if(!callerId.equals("null")) {
-            binding.callLayout.setVisibility(View.VISIBLE);
-            binding.incomingCallText.setText(callerId + " is calling...");
-
-            binding.callAcceptBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    database.getReference().child("Users").child(senderId).child("callConnectionId").setValue(receiverId+senderId);
-                    database.getReference().child("Users").child(senderId).child("isAvailableForCalls").setValue(true);
-
-                    binding.callLayout.setVisibility(View.GONE);
-                    switchToControls();
-                }
-            });
-
-            binding.callRejectBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    database.getReference().child("Users").child(senderId).child("incomingVideoCall").setValue("null");
-                    binding.callLayout.setVisibility(View.GONE);
-                }
-            });
-        }
-    }
+//    private void onCallRequest(String callerId) {
+//        if(!callerId.equals("null")) {
+//            binding.callLayout.setVisibility(View.VISIBLE);
+//            binding.incomingCallText.setText(callerId + " is calling...");
+//
+//            binding.callAcceptBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    database.getReference().child("Users").child(senderId).child("callConnectionId").setValue(receiverId+senderId);
+//                    database.getReference().child("Users").child(senderId).child("isAvailableForCalls").setValue(true);
+//
+//                    binding.callLayout.setVisibility(View.GONE);
+//                    switchToControls();
+//                }
+//            });
+//
+//            binding.callRejectBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    database.getReference().child("Users").child(senderId).child("incomingVideoCall").setValue("null");
+//                    binding.callLayout.setVisibility(View.GONE);
+//                }
+//            });
+//        }
+//    }
 
     private void switchToControls() {
         binding.callControlLayout.setVisibility(View.VISIBLE);

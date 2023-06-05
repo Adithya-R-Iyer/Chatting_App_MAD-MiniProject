@@ -11,48 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <RelativeLayout
-        android:id="@+id/callLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#F1EDED"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/incomingCallText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="20dp"
-            android:text="Someone is calling..."
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/callAcceptBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/callRejectBtn"
-            android:padding="20dp"
-            android:src="@drawable/phone"
-            app:tint="#42B90F" />
-
-        <ImageView
-            android:id="@+id/callRejectBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:padding="20dp"
-            android:src="@drawable/call_end"
-            app:tint="#D71C1C" />
-
-    </RelativeLayout>
-
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/callControlLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="15dp"
-        android:orientation="horizontal"
-        android:id="@+id/callControlLayout">
+        android:layout_marginBottom="15dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/btnCameraOff"
