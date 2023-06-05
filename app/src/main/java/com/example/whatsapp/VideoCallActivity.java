@@ -3,12 +3,16 @@ package com.example.whatsapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -67,7 +71,7 @@ public class VideoCallActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 isVideo = !isVideo;
-                callJavaScriptFunction("toggleVideo('" + isVideo + "');");
+                callJavaScriptFunction("toggleVideo(" + isVideo + ")");
                 if (isVideo) {
                     binding.btnCameraOff.setImageResource(R.drawable.camera_off_whitebg);
                 } else {
@@ -80,7 +84,7 @@ public class VideoCallActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 isAudio = !isAudio;
-                callJavaScriptFunction("toggleAudio('" + isAudio + "');");
+                callJavaScriptFunction("toggleAudio(" + isAudio + ")");
                 if (isAudio) {
                     binding.btnMicOff.setImageResource(R.drawable.mic_off_whitebg);
                 } else {
@@ -90,7 +94,6 @@ public class VideoCallActivity extends AppCompatActivity {
         });
 
         setUpWebView();
-        makeCall();
     }
 
     private void makeCall() {
@@ -101,9 +104,10 @@ public class VideoCallActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if(snapshot.getValue(Boolean.class).toString().equals("true")){
+                        Log.d("vcDebug","Receiver Accepted the call... isAvailableForCalls listener worked");
                         database.getReference().child("Users").child(senderId).child("callConnectionId").setValue(senderId+receiverId);
                         switchToControls();
-                        callJavaScriptFunction("startCall('" + receiverId + "');");
+                        callJavaScriptFunction("startCall(" + receiverId + ")");
                     }
                 }
 
@@ -139,19 +143,27 @@ public class VideoCallActivity extends AppCompatActivity {
 
     private void loadVideoCall() {
 
-        String filePath = "call.html";
-        // Get the AssetManager
-        AssetManager assetManager = getAssets();
+//        String filePath = "index.html";
+//        Log.d("vcDebug","filePath set");
+//        // Get the AssetManager
+//        AssetManager assetManager = getAssets();
+//        Log.d("vcDebug","assetManager set");
 
         try {
-            // Open the file using the AssetManager
-            InputStream inputStream = assetManager.open(filePath);
-            // Convert the InputStream to a file path
-            File file = convertInputStreamToFile(inputStream);
-            // Get the absolute file path
-            String absoluteFilePath = file.getAbsolutePath();
-            // Load the file in the WebView
-            binding.webView.loadUrl("file://" + absoluteFilePath);
+//            // Open the file using the AssetManager
+//            Log.d("vcDebug","try block entered");
+//            InputStream inputStream = assetManager.open(filePath);
+//            Log.d("vcDebug","inputStream set");
+//            // Convert the InputStream to a file path
+//            File file = convertInputStreamToFile(inputStream);
+//            Log.d("vcDebug","convertInputStreamToFile() called");
+//            // Get the absolute file path
+//            String absoluteFilePath = file.getAbsolutePath();
+//            Log.d("vcDebug","absoluteFilePath set :- " + absoluteFilePath);
+//            // Load the file in the WebView
+//            binding.webView.loadUrl("file://" + absoluteFilePath);
+            binding.webView.loadUrl("file:///android_asset/index.html");
+            Log.d("vcDebug","WebView LocalURL loaded");
 
             binding.webView.setWebViewClient(new WebViewClient(){
                 @Override
@@ -162,20 +174,30 @@ public class VideoCallActivity extends AppCompatActivity {
                     initializePeer();
                 }
             });
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e("vcDebug",Log.getStackTraceString(e));
         }
     }
 
     private void initializePeer() {
 
-            callJavaScriptFunction("init('" + senderId + "');");
-            Log.d("vcDebug","JavaScript init function called");
+//            callJavaScriptFunction("init(" + senderId + ")");
+//        boolean isInitCalled = (boolean) binding.webView.evaluateJavascript("callJavaScriptFunction('init(" + senderId + ")')", null);
+        binding.webView.evaluateJavascript("init('" + senderId + "')", null);
+        Log.d("vcDebug","JavaScript init function called");
             onPeerConnected();
+            Log.d("vcDebug","" + isPeerConnected);
+            makeCall();
+            Log.d("vcDebug","makeCall function executed");
             database.getReference().child("Users").child(senderId).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    onCallRequest(snapshot.getValue(String.class));
+                    String callerId = snapshot.getValue(String.class);
+                    Log.d("vcDebug","onCallRequest method starting...");
+                    Intent intent = new Intent(VideoCallActivity.this, CallReceiveActivity.class);
+                    intent.putExtra("callerId", callerId);
+//                    onCallRequest(snapshot.getValue(String.class));
+                    Log.d("vcDebug","onCallRequest method executed...");
                 }
 
                 @Override
@@ -228,6 +250,13 @@ public class VideoCallActivity extends AppCompatActivity {
 
     // Helper method to convert InputStream to File
     private File convertInputStreamToFile(InputStream inputStream) throws IOException {
+
+        WebSettings webSettings = binding.webView.getSettings();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            webSettings.setAllowFileAccessFromFileURLs(true);
+            webSettings.setAllowUniversalAccessFromFileURLs(true);
+        }
+
         File file = new File(getCacheDir(), "temp.html");
         FileOutputStream outputStream = new FileOutputStream(file);
         byte[] buffer = new byte[1024];

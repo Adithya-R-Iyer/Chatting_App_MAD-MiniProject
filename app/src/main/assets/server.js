@@ -28,14 +28,17 @@ function init(userId) {
         port: 9000,
         path: '/peerjs',
     });
+    // alert("peer created")
     
     // Listen for the 'open' event to know when the connection is established
     peer.on('open', () => {
-        console.log('Connected to PeerJS server');
+        // alert('Connected to PeerJS server');
 
         localVideo = document.getElementById('local-video');
         remoteVideo = document.getElementById('remote-video');
+        po = document.getElementById('po');
 
+        po.style.color = "blue";
         localVideo.style.opacity = 0;
         remoteVideo.style.opacity = 0;
 
@@ -86,6 +89,8 @@ function listen() {
 
 // Make a call to another user
 function startCall(otherUserId) {
+
+  alert("Start called method called in JS")
 
   // Get the user media
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
