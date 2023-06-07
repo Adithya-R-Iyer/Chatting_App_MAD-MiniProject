@@ -32,6 +32,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
     int SENDER_VIEW_TYPE = 1;
     int RECEIVER_VIEW_TYPE = 2;
+    
     int flag =0;
 
     public ChatAdapter(ArrayList<MessagesModel> messagesModels, Context context) {

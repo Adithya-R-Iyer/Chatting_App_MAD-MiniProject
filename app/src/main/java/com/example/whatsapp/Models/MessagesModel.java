@@ -5,6 +5,8 @@ public class MessagesModel {
     String uId, message, messageId, userName;
     Long timestamp;
 
+    String media,messageDesc;
+
     public MessagesModel(String uId, String message, String messageId, String userName, Long timestamp) {
         this.uId = uId;
         this.message = message;
@@ -16,6 +18,26 @@ public class MessagesModel {
     public MessagesModel(String uId, String message) {
         this.uId = uId;
         this.message = message;
+    }
+
+    //CHNAGES MADE HERE FROM NEW FEILDS
+
+
+    public MessagesModel(String uId, String message, String messageId, String userName, Long timestamp, String media, String messageDesc) {
+        this.uId = uId;
+        this.message = message;
+        this.messageId = messageId;
+        this.userName = userName;
+        this.timestamp = timestamp;
+        this.media = media;
+        this.messageDesc = messageDesc;
+    }
+
+    public MessagesModel(String uId, Long timestamp, String media, String messageDesc) {
+        this.uId = uId;
+        this.timestamp = timestamp;
+        this.media = media;
+        this.messageDesc = messageDesc;
     }
 
     public MessagesModel() {
@@ -59,5 +81,22 @@ public class MessagesModel {
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+
+
+    public String getMedia() {
+        return media;
+    }
+
+    public void setMedia(String media) {
+        this.media = media;
+    }
+
+    public String getMessageDesc() {
+        return messageDesc;
+    }
+
+    public void setMessageDesc(String messageDesc) {
+        this.messageDesc = messageDesc;
     }
 }

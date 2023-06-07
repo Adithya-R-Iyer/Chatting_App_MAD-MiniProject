@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
@@ -21,13 +22,21 @@ import com.example.whatsapp.Models.MessagesModel;
 
 import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.databinding.ActivityChatDetailBinding;
+import com.example.whatsapp.databinding.ImagePreviewBottomSheetDialogBinding;
+import com.example.whatsapp.databinding.SelectedTypeOfMediaBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -46,9 +55,11 @@ public class ChatDetailActivity extends AppCompatActivity {
     FirebaseAuth auth;
     String scheduled_message="";
     TextView onlineCheck;
+    Uri imageUri;
 
     private Handler handler;
     private Runnable task;
+
 
 
 
@@ -61,6 +72,28 @@ public class ChatDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityChatDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.imageSender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final BottomSheetDialog bottomSheetDialog=new BottomSheetDialog(ChatDetailActivity.this);
+                SelectedTypeOfMediaBinding selectedTypeOfMediaBinding= SelectedTypeOfMediaBinding.inflate(getLayoutInflater());
+                bottomSheetDialog.setContentView(selectedTypeOfMediaBinding.getRoot());
+                bottomSheetDialog.show();
+
+                selectedTypeOfMediaBinding.imageSend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent1=new Intent();
+                        intent1.setAction(Intent.ACTION_GET_CONTENT);
+                        intent1.setType("image/*");
+
+                        startActivityForResult(intent1,45);
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+            }
+        });
 
         onlineCheck=binding.onlineCheck;
 
@@ -301,6 +334,9 @@ public class ChatDetailActivity extends AppCompatActivity {
         };
 
 
+
+
+
     }
     private void SpeakNow(View view){
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -315,6 +351,67 @@ public class ChatDetailActivity extends AppCompatActivity {
         if(requestCode==111 && resultCode== RESULT_OK){
             binding.etMessage.setText(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0));
         }
+
+        if(requestCode==45){
+            if(data!=null)
+            {
+                if (data.getData()!=null){
+                    imageUri=data.getData();
+                    final BottomSheetDialog bottomSheetDialogImage=new BottomSheetDialog(ChatDetailActivity.this);
+                    ImagePreviewBottomSheetDialogBinding previewBottomSheetDialogBinding= ImagePreviewBottomSheetDialogBinding.inflate(getLayoutInflater());
+                    bottomSheetDialogImage.setContentView(previewBottomSheetDialogBinding.getRoot());
+                    bottomSheetDialogImage.show();
+
+                    previewBottomSheetDialogBinding.imgMessage.setImageURI(imageUri);
+//                    Picasso.get().load(imageUri).placeholder(R.drawable.profile).into(previewBottomSheetDialogBinding.imgMessage);
+                    Toast.makeText(this, imageUri.toString(), Toast.LENGTH_SHORT).show();
+
+                    previewBottomSheetDialogBinding.sendImg.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (previewBottomSheetDialogBinding.edtGetMsgDescription.getText().toString().trim().isEmpty()){
+                                final String senderId = auth.getUid();
+                                String receiverId = getIntent().getStringExtra("userId");
+                                final String senderRoom = senderId + receiverId; // This ID is used to create a 1st child node inside Chats from Sender to Receiver in the FireBase database
+                                final String receiverRoom = receiverId + senderId; // This ID is used to create a  2nd child node inside Chats from Receiver to Sender in the FireBase database
+
+                                final StorageReference storage= FirebaseStorage.getInstance().getReference().child("sent_images").child(senderRoom);
+                                storage.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                        storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                MessagesModel picMsg= new MessagesModel();
+                                                picMsg.setuId(senderId);
+                                                picMsg.setTimestamp(new Date().getTime());
+                                                picMsg.setMedia(imageUri.toString());
+                                                picMsg.setMessageDesc(previewBottomSheetDialogBinding.edtGetMsgDescription.getText().toString());
+                                                // Here .push() ensures that a new Id is created with the help of the TimeStamp ...whenever a new message is sent -> Push is usually used to create unique id's
+                                                database.getReference().child("chats").child(senderRoom).push().setValue(picMsg).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        //if message from sender is added successfully to the SenderReciver Node then add the same message to the ReceiverSender Node
+                                                        database.getReference().child("chats").child(receiverRoom).push().setValue(picMsg).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void unused) {
+
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+
     }
 
     //method to calculate the delay of after how much time the message should be sent
@@ -370,6 +467,9 @@ public class ChatDetailActivity extends AppCompatActivity {
         // Remove the task from the handler if the activity is destroyed
         handler.removeCallbacks(task);
     }
+
+
+
 
 
 
