@@ -34,6 +34,8 @@ public class OtherUserProfileActivity extends AppCompatActivity {
     FirebaseStorage storage;
     ProgressDialog progressDialog;
 
+    String something="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().hide();
@@ -55,6 +57,7 @@ public class OtherUserProfileActivity extends AppCompatActivity {
                 Users user=snapshot.getValue(Users.class);
 //                Toast.makeText(OtherUserProfileActivity.this, user.getUserName(), Toast.LENGTH_SHORT).show();
                 Picasso.get().load(user.getProfilepic()).placeholder(R.drawable.profile).into(binding.receiverProfileImage);
+                something=user.getProfilepic();
                 binding.receiverUserName.setText(user.getUserName());
                 binding.receiverEmail.setText(user.getMail());
 
@@ -161,5 +164,11 @@ public class OtherUserProfileActivity extends AppCompatActivity {
             }
         });
 
+//        binding.receiverProfileImage.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(OtherUserProfileActivity.this,something, Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 }

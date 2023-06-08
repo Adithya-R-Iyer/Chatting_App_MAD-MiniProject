@@ -61,7 +61,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>{
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if(snapshot.hasChildren()) {
                             for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                if (dataSnapshot.child("media").getValue()==null)
                                 holder.lastMessage.setText(dataSnapshot.child("message").getValue().toString());
+                                else{
+                                    holder.lastMessage.setText("~IMG~");
+                                }
                             }
                         }
                     }

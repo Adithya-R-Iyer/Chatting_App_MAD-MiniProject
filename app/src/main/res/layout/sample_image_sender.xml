@@ -50,6 +50,8 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
             android:layout_height="100dp"
             app:srcCompat="@drawable/image_placeholder" />
 
