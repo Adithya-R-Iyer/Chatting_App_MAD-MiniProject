@@ -92,8 +92,23 @@ public class ChatDetailActivity extends AppCompatActivity {
                         bottomSheetDialog.dismiss();
                     }
                 });
+
+                selectedTypeOfMediaBinding.videoSend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent1=new Intent();
+                        intent1.setAction(Intent.ACTION_GET_CONTENT);
+                        intent1.setType("video/*");
+
+                        startActivityForResult(intent1,45);
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+
             }
         });
+
+
 
         onlineCheck=binding.onlineCheck;
 
@@ -375,7 +390,7 @@ public class ChatDetailActivity extends AppCompatActivity {
                                 final String senderRoom = senderId + receiverId; // This ID is used to create a 1st child node inside Chats from Sender to Receiver in the FireBase database
                                 final String receiverRoom = receiverId + senderId; // This ID is used to create a  2nd child node inside Chats from Receiver to Sender in the FireBase database
 
-                                final StorageReference storage= FirebaseStorage.getInstance().getReference().child("sent_images").child(senderRoom);
+                                final StorageReference storage= FirebaseStorage.getInstance().getReference().child("sent_images").child(senderRoom).child(String.valueOf(new Date().getTime()));
                                 storage.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {

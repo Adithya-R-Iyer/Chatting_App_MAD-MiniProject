@@ -3,6 +3,7 @@ package com.example.whatsapp.Adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.whatsapp.Models.MessagesModel;
 import com.example.whatsapp.OtherUserProfileActivity;
 import com.example.whatsapp.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.ktx.Firebase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -225,6 +231,29 @@ public class ChatAdapter extends RecyclerView.Adapter{
             }
 
             ((ImgReceiverViewHolder)holder).receiverImgDesc.setText(messagesModel.getMessageDesc());
+            StorageReference fileRef = FirebaseStorage.getInstance().getReferenceFromUrl(messagesModel.getMedia());
+//                    fileRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+//                        @Override
+//                        public void onSuccess(StorageMetadata storageMetadata) {
+//                            // Retrieve the MIME type or file extension from the metadata
+//                            String mimeType = storageMetadata.getContentType();
+//                            String fileExtension = storageMetadata.getPath().substring(storageMetadata.getPath().lastIndexOf("."));
+//
+//                            // Check whether it is an image or video file
+//                            if (mimeType != null && mimeType.startsWith("image/")) {
+//                                // It is an image file
+//                                Log.e("data","this is image!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//                            } else if (fileExtension != null && (fileExtension.equalsIgnoreCase(".mp4") || fileExtension.equalsIgnoreCase(".mov"))) {
+//                                // It is a video file\
+//                                Log.e("data","this is VIDEO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//                            } else {
+//                                // It is neither an image nor a video file
+//
+//                                Log.e("data","NOOOONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//                            }
+//                        }
+//                    });
+
             Picasso.get().load(messagesModel.getMedia()).placeholder(R.drawable.profile).into(((ImgReceiverViewHolder)holder).receiverImg);
             ((ImgReceiverViewHolder)holder).receiverTime.setText(timeString);
         }
@@ -255,6 +284,29 @@ public class ChatAdapter extends RecyclerView.Adapter{
 //                @Override
 //                public void onCancelled(@NonNull DatabaseError error) {
 //                    Toast.makeText(context, "some error", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+            StorageReference fileRef = FirebaseStorage.getInstance().getReferenceFromUrl(messagesModel.getMedia());
+
+//            fileRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+//                @Override
+//                public void onSuccess(StorageMetadata storageMetadata) {
+//                    // Retrieve the MIME type or file extension from the metadata
+//                    String mimeType = storageMetadata.getContentType();
+//                    String fileExtension = storageMetadata.getPath().substring(storageMetadata.getPath().lastIndexOf("."));
+//
+//                    // Check whether it is an image or video file
+//                    if (mimeType != null && mimeType.startsWith("image/")) {
+//                        // It is an image file
+//                        Log.e("data","this is image!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//                    } else if (fileExtension != null && (fileExtension.equalsIgnoreCase(".mp4") || fileExtension.equalsIgnoreCase(".mov"))) {
+//                        // It is a video file\
+//                        Log.e("data","this is VIDEO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//                    } else {
+//                        // It is neither an image nor a video file
+//
+//                        Log.e("data","NOOOONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//                    }
 //                }
 //            });
 
