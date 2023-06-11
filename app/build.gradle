@@ -45,7 +45,7 @@ android {
     sourceSets {
         main {
             assets {
-                srcDirs 'src\\main\\assets', 'src\\main\\assets\\server'
+                srcDirs 'src\\main\\assets'
             }
         }
     }

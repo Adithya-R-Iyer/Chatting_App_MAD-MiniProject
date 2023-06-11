@@ -79,9 +79,9 @@ public class VideoCallActivity extends AppCompatActivity {
                 isVideo = !isVideo;
                 callJavaScriptFunction("toggleVideo('" + isVideo + "')");
                 if (isVideo) {
-                    binding.btnCameraOff.setImageResource(R.drawable.camera_off_whitebg);
-                } else {
                     binding.btnCameraOff.setImageResource(R.drawable.camera_whitebg);
+                } else {
+                    binding.btnCameraOff.setImageResource(R.drawable.camera_off_whitebg);
                 }
             }
         });
@@ -92,9 +92,9 @@ public class VideoCallActivity extends AppCompatActivity {
                 isAudio = !isAudio;
                 callJavaScriptFunction("toggleAudio('" + isAudio + "')");
                 if (isAudio) {
-                    binding.btnMicOff.setImageResource(R.drawable.mic_off_whitebg);
-                } else {
                     binding.btnMicOff.setImageResource(R.drawable.mic_on_whitebg);
+                } else {
+                    binding.btnMicOff.setImageResource(R.drawable.mic_off_whitebg);
                 }
             }
         });
@@ -105,24 +105,23 @@ public class VideoCallActivity extends AppCompatActivity {
     private void makeCall() {
 
         if(isPeerConnected){
-            callJavaScriptFunction("startCall(" + 1 + ")");
-//            database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue(auth.getUid()); //Notify Receiver Who the Caller Is??
-//            database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    if(snapshot.getValue(Boolean.class).toString().equals("true")){
-//                        Log.d("vcDebug","Receiver Accepted the call... isAvailableForCalls listener worked");
-//                        database.getReference().child("Users").child(senderId).child("callConnectionId").setValue(senderId+receiverId);
-////                        switchToControls();
-//                        callJavaScriptFunction("startCall(" + receiverId + ")");
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//
-//                }
-//            });
+
+            database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue(auth.getUid()); //Notify Receiver Who the Caller Is??
+            database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(snapshot.getValue(Boolean.class).toString().equals("true")){
+                        Log.d("vcDebug","Receiver Accepted the call... isAvailableForCalls listener worked");
+                        database.getReference().child("Users").child(senderId).child("callConnectionId").setValue(senderId+receiverId);
+                        callJavaScriptFunction("startCall(" + receiverId + ")");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
         else{
             Toast.makeText(this, "You're not connected. Check your internet", Toast.LENGTH_LONG).show();
@@ -190,7 +189,8 @@ public class VideoCallActivity extends AppCompatActivity {
 
 //      callJavaScriptFunction("init(" + senderId + ")");
 //      boolean isInitCalled = (boolean) binding.webView.evaluateJavascript("callJavaScriptFunction('init(" + senderId + ")')", null);
-        binding.webView.evaluateJavascript("init('" + senderId + "')", null);
+//        binding.webView.evaluateJavascript("init('" + senderId + "')", null);
+        callJavaScriptFunction("init('" + senderId + "')");
         Log.d("vcDebug","JavaScript init function called");
         onPeerConnected();
         Log.d("vcDebug","" + isPeerConnected);

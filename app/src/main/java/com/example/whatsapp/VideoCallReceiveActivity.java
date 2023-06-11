@@ -99,9 +99,9 @@ public class VideoCallReceiveActivity extends AppCompatActivity {
                 isVideo = !isVideo;
                 callJavaScriptFunction("toggleVideo('" + isVideo + "')");
                 if (isVideo) {
-                    binding.btnCameraOff.setImageResource(R.drawable.camera_off_whitebg);
-                } else {
                     binding.btnCameraOff.setImageResource(R.drawable.camera_whitebg);
+                } else {
+                    binding.btnCameraOff.setImageResource(R.drawable.camera_off_whitebg);
                 }
             }
         });
@@ -112,9 +112,9 @@ public class VideoCallReceiveActivity extends AppCompatActivity {
                 isAudio = !isAudio;
                 callJavaScriptFunction("toggleAudio('" + isAudio + "')");
                 if (isAudio) {
-                    binding.btnMicOff.setImageResource(R.drawable.mic_off_whitebg);
-                } else {
                     binding.btnMicOff.setImageResource(R.drawable.mic_on_whitebg);
+                } else {
+                    binding.btnMicOff.setImageResource(R.drawable.mic_off_whitebg);
                 }
             }
         });
@@ -184,9 +184,13 @@ public class VideoCallReceiveActivity extends AppCompatActivity {
 
     private void acceptIncomingCall() {
 
-        database.getReference().child("Users").child(senderId).child("callConnectionId").setValue(callerId+senderId);
-        database.getReference().child("Users").child(senderId).child("isAvailableForCalls").setValue(true);
+        if(isPeerConnected) {
+            database.getReference().child("Users").child(senderId).child("callConnectionId").setValue(callerId + senderId);
+            database.getReference().child("Users").child(senderId).child("isAvailableForCalls").setValue(true);
+        }
+        else {
 
+        }
     }
 
     private static class CustomWebChromeClient extends WebChromeClient {
