@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.databinding.ActivityCallReceiveBinding;
@@ -25,8 +26,8 @@ public class CallReceiveActivity extends AppCompatActivity {
     ActivityCallReceiveBinding binding;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    String callerId,senderId, callerUserName, profileImageURI;
-    Users caller;
+    String callerId,receiverId,callerUserName, profileImageURI, senderId;
+    int SR_TOKEN, EXECUTION_TOKEN=1; // RUN - 1  , STOP =0
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,20 +36,20 @@ public class CallReceiveActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         callerId = getIntent().getStringExtra("callerId");
-        senderId = auth.getUid();
+        receiverId = getIntent().getStringExtra("receiverId");
+        SR_TOKEN = getIntent().getIntExtra("srToken", 0);
+        senderId = auth.getUid();  // note that here at this point senderId is equal to call receiver's receiverId
 
         database.getReference().child("Users").child(callerId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                caller = snapshot.getValue(Users.class);
-//                profileImageURI = caller.getProfilepic();
+                Users caller = snapshot.getValue(Users.class);
+                assert caller != null;
+                profileImageURI = caller.getProfilepic();
                 callerUserName = caller.getUserName();
-                profileImageURI = "https://firebasestorage.googleapis.com/v0/b/whatsapp-5a1fe.appspot.com/o/profile_pictures%2FT9H44WOpqXbR4qSmyDS7QJgzWgr1?alt=media&token=df84900b-ca26-4267-9425-566f0c77f879";
-
                 binding.tvCallerName.setText(callerUserName);
                 Picasso.get().load(profileImageURI).placeholder(R.drawable.profile).into(binding.profileImage);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("error","Couldn't Fetch Caller Details due to database error");
@@ -59,18 +60,67 @@ public class CallReceiveActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(CallReceiveActivity.this, VideoCallActivity.class);
-                database.getReference().child(senderId).child("isAvailableForCalls").setValue(true);
-                intent.putExtra("pickerId", senderId);
+                database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(true);
+                intent.putExtra("callerId", callerId);
+                intent.putExtra("receiverId", receiverId);
+                intent.putExtra("srToken",2);
+                EXECUTION_TOKEN=0;
                 startActivity(intent);
+                finish();
             }
         });
 
         binding.btnRejectCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                database.getReference().child("Users").child(senderId).child("isAvailableForCalls").setValue(false);
-                database.getReference().child("Users").child(senderId).child("incomingVideoCall").setValue("null");
+                Intent intent = new Intent(CallReceiveActivity.this, MainActivity.class);
+                intent.putExtra("intentToken", 1);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(false);
+                database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue("null");
+                EXECUTION_TOKEN = 0;
+                startActivity(intent);
+                Toast.makeText(getApplicationContext(), "Video Chat Ended", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
+
+        //Code to perform the task ...if caller ends the call before the receiver responds to it
+        Timer timer = new Timer();
+        // Create a TimerTask that defines the task to be executed
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                // Code to be executed after the specified time
+                if(EXECUTION_TOKEN==1) {
+                    database.getReference().child("Users").child(receiverId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Users user = snapshot.getValue(Users.class);
+                            assert user != null;
+                            Boolean isAvailableForCalls = user.getAvailableForCalls();
+                            String incomingVideoCall = user.getIncomingVideoCall();
+                            if(Boolean.FALSE.equals(isAvailableForCalls) && incomingVideoCall.equals("null")) {
+                                Intent intent = new Intent(CallReceiveActivity.this, MainActivity.class);
+                                intent.putExtra("intentToken", 1);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(CallReceiveActivity.this, "Please Respond to the Incoming Call...", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+
+                    });
+                }
+            }
+        };
+        // Schedule the task to be executed after 5 seconds
+        timer.schedule(task, 15000);
     }
 }

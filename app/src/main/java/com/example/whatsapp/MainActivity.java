@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     String senderUid;
+    int INTENT_TOKEN = 0; //From sigin->MainActivity val=0 , from VideoCall->MainActivity val =1
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         senderUid = auth.getUid();
 //        setOnlineStatus("online");
 
+        INTENT_TOKEN = getIntent().getIntExtra("intentToken", 0);
+
         //Incoming VideoCall Code
         database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {
             @Override
@@ -55,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("vcDebug","onCallRequest method starting...");
                     Intent intent = new Intent(MainActivity.this, CallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", auth.getUid());
+                    intent.putExtra("srToken", 2);
                     startActivity(intent);
 //                    onCallRequest(snapshot.getValue(String.class));
                     Log.d("vcDebug","onCallRequest method executed...");
@@ -113,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Close the app completely
-        database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
-        finish();
+            database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
+            finish();
 //        System.exit(0);
     }
 
@@ -144,7 +149,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
+        super.onDestroy();
+//        if(INTENT_TOKEN==0) {
+//        }
     }
 }

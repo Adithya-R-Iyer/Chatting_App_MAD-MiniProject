@@ -66,6 +66,8 @@ public class SettingsActivity extends AppCompatActivity {
                     Log.d("vcDebug","onCallRequest method starting...");
                     Intent intent = new Intent(SettingsActivity.this, CallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", auth.getUid());
+                    intent.putExtra("srToken", 2);
                     startActivity(intent);
 //                    onCallRequest(snapshot.getValue(String.class));
                     Log.d("vcDebug","onCallRequest method executed...");

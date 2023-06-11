@@ -44,6 +44,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ChatBotActivity extends AppCompatActivity {
 
     ActivityChatBotBinding binding;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
     private Handler handler;
     private Runnable task;
     String scheduled_message="";
@@ -75,6 +76,8 @@ public class ChatBotActivity extends AppCompatActivity {
                     Log.d("vcDebug","onCallRequest method starting...");
                     Intent intent = new Intent(ChatBotActivity.this, CallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", auth.getUid());
+                    intent.putExtra("srToken", 2);
                     startActivity(intent);
 //                    onCallRequest(snapshot.getValue(String.class));
                     Log.d("vcDebug","onCallRequest method executed...");

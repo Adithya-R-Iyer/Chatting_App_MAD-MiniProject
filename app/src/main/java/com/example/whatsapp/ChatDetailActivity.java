@@ -95,6 +95,8 @@ public class ChatDetailActivity extends AppCompatActivity {
                     Log.d("vcDebug","onCallRequest method starting...");
                     Intent intent = new Intent(ChatDetailActivity.this, CallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", auth.getUid());
+                    intent.putExtra("srToken", 2);
                     startActivity(intent);
 //                    onCallRequest(snapshot.getValue(String.class));
                     Log.d("vcDebug","onCallRequest method executed...");
@@ -111,9 +113,10 @@ public class ChatDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ChatDetailActivity.this, VideoCallActivity.class);
-//                intent.putExtra("receiverId",receiverId);
-//                intent.putExtra("callerId", senderId);
-//                database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue(senderId);
+                intent.putExtra("receiverId",receiverId);
+                intent.putExtra("callerId", senderId);
+                intent.putExtra("srToken",1);
+                database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue(senderId);
                 startActivity(intent);
             }
         });

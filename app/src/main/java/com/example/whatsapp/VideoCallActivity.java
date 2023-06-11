@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+
+import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.databinding.ActivityVideoCallBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -70,6 +72,8 @@ public class VideoCallActivity extends AppCompatActivity {
     //Auth id of the person who is to be called... this token is received from the caller
     String receiverId = "";
     Boolean receiverAvailableForCalls = false;
+    int SR_TOKEN;  // caller - 1   receiver - 2
+    int EXECUTION_TOKEN = 1; //RUN = 1  & STOP = 0
 
     //one who makes the call
     String callerId = "";
@@ -191,22 +195,38 @@ public class VideoCallActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(binding.getRoot());
 
-//        receiverId = getIntent().getStringExtra("receiverId");
-//        callerId = getIntent().getStringExtra("callerId");
-//        Log.d("videoCallDebug", receiverId);
-//
-//        database.getReference().child("Users").child(receiverId).addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                String receiverUserName = snapshot.getValue(String.class);
-//                binding.tvRemoteUserName.setText(receiverUserName);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.e("videoCallDebug", "Unable to fetch Receiver User Name... FirebaseError");
-//            }
-//        });
+        receiverId = getIntent().getStringExtra("receiverId");
+        callerId = getIntent().getStringExtra("callerId");
+        SR_TOKEN =  getIntent().getIntExtra("srToken", 0 );
+        Log.d("videoCallDebug", receiverId);
+
+        if(SR_TOKEN == 1) {
+            database.getReference().child("Users").child(receiverId).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String receiverUserName = snapshot.getValue(String.class);
+                    binding.tvRemoteUserName.setText(receiverUserName);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("videoCallDebug", "Unable to fetch Receiver User Name... FirebaseError");
+                }
+            });
+        } else if(SR_TOKEN==2) {
+            database.getReference().child("Users").child(callerId).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String receiverUserName = snapshot.getValue(String.class);
+                    binding.tvRemoteUserName.setText(receiverUserName);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("videoCallDebug", "Unable to fetch Receiver User Name... FirebaseError");
+                }
+            });
+        }
 
 
 //        pickerId = getIntent().getStringExtra("pickerId");
@@ -238,64 +258,61 @@ public class VideoCallActivity extends AppCompatActivity {
 
         Log.d("videoCallDebug", "setupVideoSDKEngine called ");
         setupVideoSDKEngine();
-
-//        binding.joinCall.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                joinCall();
-//            }
-//        });
-
+        //Code to Establish Call Directly
         joinCall();
 
         binding.btnCallEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 leaveCall();
-//                Intent intent = new Intent(VideoCallActivity.this, MainActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                if(!pickerId.equals(""))
-//                    database.getReference().child(pickerId).child("incomingVideoCall").setValue("null");
-//                    database.getReference().child(pickerId).child("isAvailableForCalls").setValue(false);
-//                if(!receiverId.equals(""))
-//                    database.getReference().child(receiverId).child("isAvailableForCalls").setValue(false);
-//                    database.getReference().child(receiverId).child("incomingVideoCall").setValue("null");
-//                startActivity(intent);
-                Toast.makeText(getApplicationContext(), "Video Call Room Left", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(VideoCallActivity.this, MainActivity.class);
+                intent.putExtra("intentToken", 1);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue("null");
+                database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(false);
+                EXECUTION_TOKEN = 0; // STOP Runnable
+                startActivity(intent);
+                Toast.makeText(getApplicationContext(), "Video Chat Ended", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
 
-//        if(!receiverId.equals("") && !receiverAvailableForCalls) {
-//            Timer timer = new Timer();
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    // Perform the subsequent code
-//                    database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                            Boolean value = snapshot.getValue(Boolean.class);
-//                            if (Boolean.FALSE.equals(value)) {
-//                                leaveCall();
-//                                Intent intent = new Intent(VideoCallActivity.this, MainActivity.class);
-//                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                startActivity(intent);
-//                                finish();
-//                            }
-//                            else {
-//                                receiverAvailableForCalls=true;
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError error) {
-//
-//                        }
-//                    });
-//                }
-//            }, 10000);
-//        }
+        if(SR_TOKEN==1 && !receiverAvailableForCalls) {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    // Perform the subsequent code
+                    if(EXECUTION_TOKEN==1) {
+                        database.getReference().child("Users").child(receiverId).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Users user = snapshot.getValue(Users.class);
+                                assert user != null;
+                                Boolean value = user.getAvailableForCalls();
+                                String incomingCall = user.getIncomingVideoCall();
+                                if (Boolean.FALSE.equals(value) && incomingCall.equals("null")) {
+                                    leaveCall();
+                                    Intent intent = new Intent(VideoCallActivity.this, MainActivity.class);
+                                    intent.putExtra("intentToken", 1);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                    Toast.makeText(getApplicationContext(), "Call Ended", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                } else if (Boolean.TRUE.equals(value) && !incomingCall.equals("null")) {
+                                    receiverAvailableForCalls = true;
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                }
+            }, 20000);
+        }
     }
 
     private void leaveCall() {
@@ -304,7 +321,7 @@ public class VideoCallActivity extends AppCompatActivity {
             showMessage("Join Our Channel First");
         } else {
             agoraEngine.leaveChannel();
-            showMessage("You Left the Channel");
+            showMessage("Left the Channel. Call Ended");
             if(remoteSurfaceView != null )
                 remoteSurfaceView.setVisibility(View.GONE);
             if(localSurfaceView != null )

@@ -34,6 +34,7 @@ public class OtherUserProfileActivity extends AppCompatActivity {
     FirebaseDatabase database;
     FirebaseStorage storage;
     ProgressDialog progressDialog;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,8 @@ public class OtherUserProfileActivity extends AppCompatActivity {
                     Log.d("vcDebug","onCallRequest method starting...");
                     Intent intent = new Intent(OtherUserProfileActivity.this, CallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", auth.getUid());
+                    intent.putExtra("srToken", 2);
                     startActivity(intent);
 //                    onCallRequest(snapshot.getValue(String.class));
                     Log.d("vcDebug","onCallRequest method executed...");

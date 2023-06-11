@@ -33,6 +33,7 @@ import java.util.Objects;
 public class GroupChatActivity extends AppCompatActivity {
 
     ActivityGroupChatBinding binding;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
     String scheduled_message="";
     FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -63,6 +64,8 @@ public class GroupChatActivity extends AppCompatActivity {
                     Log.d("vcDebug","onCallRequest method starting...");
                     Intent intent = new Intent(GroupChatActivity.this, CallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", auth.getUid());
+                    intent.putExtra("srToken", 2);
                     startActivity(intent);
 //                    onCallRequest(snapshot.getValue(String.class));
                     Log.d("vcDebug","onCallRequest method executed...");
