@@ -1,9 +1,10 @@
 package com.example.whatsapp.Models;
 
 public class Users {
-    String profilepic, userName, mail, password, userId, lastMessage, status,online;
+    private String profilepic, userName, mail, password, userId, lastMessage, status,online, incomingVideoCall;
+    private Boolean isAvailableForCalls;
 
-    public Users(String profilepic, String userName, String mail, String password, String userId, String lastMessage, String status, String online) {
+    public Users(String profilepic, String userName, String mail, String password, String userId, String lastMessage, String status, String online, Boolean isAvailableForCalls, String incomingVideoCall) {
         this.profilepic = profilepic;
         this.userName = userName;
         this.mail = mail;
@@ -12,16 +13,36 @@ public class Users {
         this.lastMessage = lastMessage;
         this.status = status;
         this.online=online;
+        this.isAvailableForCalls = isAvailableForCalls;
+        this.incomingVideoCall = incomingVideoCall;
     }
 
     public Users() {}
 
     // SignUp Constructor
-    public Users(String userName, String mail, String password,String online) {
+    public Users(String userName, String mail, String password,String online, Boolean isAvailableForCalls, String incomingVideoCall) {
         this.userName = userName;
         this.mail = mail;
         this.password = password;
         this.online=online;
+        this.isAvailableForCalls = isAvailableForCalls;
+        this.incomingVideoCall = incomingVideoCall;
+    }
+
+    public String getIncomingVideoCall() {
+        return incomingVideoCall;
+    }
+
+    public void setIncomingVideoCall(String incomingVideoCall) {
+        this.incomingVideoCall = incomingVideoCall;
+    }
+
+    public Boolean getAvailableForCalls() {
+        return isAvailableForCalls;
+    }
+
+    public void setAvailableForCalls(Boolean availableForCalls) {
+        isAvailableForCalls = availableForCalls;
     }
 
     public String getStatus() {

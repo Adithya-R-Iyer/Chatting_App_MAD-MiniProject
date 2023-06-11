@@ -166,7 +166,7 @@ public class SignInActivity extends AppCompatActivity {
                             users.setUserName(user.getDisplayName());
 
                             //check if the profile pic already exists in the FireBase storage -> if yes use it or else set Google's pic
-                            StorageReference parentRef = storage.getReference().child("yourParentFolder");
+                            StorageReference parentRef = storage.getReference().child("profile_pictures");
                             parentRef.listAll()
                                     .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                                         @Override
@@ -195,6 +195,8 @@ public class SignInActivity extends AppCompatActivity {
                                         }
                                     });
                             users.setOnline("online");
+                            users.setAvailableForCalls(false);
+                            users.setIncomingVideoCall("null");
 
                             database.getReference().child("Users").child(user.getUid()).setValue(users);
 //                            database.getReference().child("Users").child(user.getUid()).child("isOnline").setValue(true);

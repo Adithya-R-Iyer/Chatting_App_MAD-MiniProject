@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,6 +63,27 @@ public class ChatBotActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ChatBotActivity.this, MainActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        //Incoming VideoCall Code
+        database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String callerId = snapshot.getValue(String.class);
+                if(!Objects.equals(callerId, "null")) {
+                    Log.d("vcDebug","onCallRequest method starting...");
+                    Intent intent = new Intent(ChatBotActivity.this, CallReceiveActivity.class);
+                    intent.putExtra("callerId", callerId);
+                    startActivity(intent);
+//                    onCallRequest(snapshot.getValue(String.class));
+                    Log.d("vcDebug","onCallRequest method executed...");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 
