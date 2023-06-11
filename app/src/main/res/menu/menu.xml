@@ -12,6 +12,11 @@
         />
 
     <item
+        android:id="@+id/chatBot"
+        android:title="Chat With Us"
+        />
+
+    <item
         android:id="@+id/logout"
         android:title="Logout"
         />

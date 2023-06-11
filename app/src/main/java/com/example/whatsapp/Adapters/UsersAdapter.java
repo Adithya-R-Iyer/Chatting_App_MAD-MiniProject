@@ -22,7 +22,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>{
 
@@ -70,6 +72,49 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>{
                     }
                 });
 
+        //Code to display User's Last Message Time on their profile
+        FirebaseDatabase.getInstance().getReference().child("chats")
+                .child(FirebaseAuth.getInstance().getUid() + user.getUserId())
+                .orderByChild("timestamp")
+                .limitToLast(1)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.hasChildren()) {
+                            for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+
+                                //CONVERSION OF TIMESTAMP TO DATE :- HH:mm
+                                // Create a new Date object using the timestamp
+                                long lastMessageTimeStamp = (long) dataSnapshot.child("timestamp").getValue();
+                                Date lastMessageDate = new Date(lastMessageTimeStamp);
+                                // Create a SimpleDateFormat object to format the date as "HH:mm"
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                                SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy");
+                                // Use the SimpleDateFormat object to format the date as a string containing only "HH:mm"
+                                String lastMessageTimeString = dateFormat.format(lastMessageDate);
+                                String lastMessageDateString = dateFormat1.format(lastMessageDate);
+
+                                //Getting Current Date and Time
+                                long currentTimeStamp = System.currentTimeMillis();
+                                Date currentDate = new Date(currentTimeStamp);
+                                String currentDateString = dateFormat1.format(currentDate);
+
+                                if(currentDateString.equals(lastMessageDateString)) {
+                                    holder.lastMessageTime.setText(lastMessageTimeString);
+                                }
+                                else if(!currentDateString.equals(lastMessageDateString)) {
+                                    holder.lastMessageTime.setText(lastMessageDateString);
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
 
         // Code to send Data from ChatsFragments Activity to the ChatDetail Activity when clicked on a User's Profle
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +138,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>{
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView image;
-        TextView userName, lastMessage;
+        TextView userName, lastMessage, lastMessageTime;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -101,6 +146,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>{
             image = itemView.findViewById(R.id.profileImage);
             userName = itemView.findViewById(R.id.userNameList);
             lastMessage = itemView.findViewById(R.id.lastMessage);
+            lastMessageTime = itemView.findViewById(R.id.lastMessageTime);
 
         }
     }

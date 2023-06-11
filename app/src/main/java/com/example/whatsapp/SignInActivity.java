@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +19,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
@@ -30,6 +33,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.Objects;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -38,6 +46,7 @@ public class SignInActivity extends AppCompatActivity {
     FirebaseAuth auth;
     GoogleSignInClient mGoogleSignInClient;
     FirebaseDatabase database;
+    FirebaseStorage storage = FirebaseStorage.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +92,9 @@ public class SignInActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             database.getReference().child("Users").child(auth.getUid()).child("online").setValue("online");
                             Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
+                            finish();
                         } else {
                             Toast.makeText(SignInActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
@@ -153,7 +164,36 @@ public class SignInActivity extends AppCompatActivity {
                             Users users = new Users();
                             users.setUserId(user.getUid());
                             users.setUserName(user.getDisplayName());
-                            users.setProfilepic(user.getPhotoUrl().toString());
+
+                            //check if the profile pic already exists in the FireBase storage -> if yes use it or else set Google's pic
+                            StorageReference parentRef = storage.getReference().child("yourParentFolder");
+                            parentRef.listAll()
+                                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                                        @Override
+                                        public void onSuccess(ListResult listResult) {
+                                            for (StorageReference item : listResult.getItems()) {
+                                                if (item.getName().equals(user.getUid())) {
+                                                    // The child file "user.getUid()" exists under the parent folder
+                                                    storage.getReference().child("profile_pictures").child(Objects.requireNonNull(user.getUid())).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                        @Override
+                                                        public void onSuccess(Uri uri) {
+                                                            users.setProfilepic(uri.toString());
+                                                        }
+                                                    });
+                                                    break; // Exit the loop since the file is found
+                                                }
+                                            }
+                                            // If control reaches here, the child file does not exist under the parent folder
+                                            // Perform your desired action here if needed
+                                            users.setProfilepic(Objects.requireNonNull(user.getPhotoUrl()).toString());
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Handle any errors that occurred
+                                        }
+                                    });
                             users.setOnline("online");
 
                             database.getReference().child("Users").child(user.getUid()).setValue(users);
@@ -162,7 +202,9 @@ public class SignInActivity extends AppCompatActivity {
 
 
                             Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
+                            finish();
                             Toast.makeText(SignInActivity.this, "Signed In Successfully With Google", Toast.LENGTH_SHORT).show();
 //                            updateUI(user);
                         } else {
