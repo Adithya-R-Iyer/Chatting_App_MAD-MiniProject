@@ -146,12 +146,9 @@ public class MainActivity extends AppCompatActivity {
 //        setOnlineStatus("offline");
 //    }
 
-
     @Override
     protected void onDestroy() {
-        database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
         super.onDestroy();
-//        if(INTENT_TOKEN==0) {
-//        }
+        database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
     }
 }

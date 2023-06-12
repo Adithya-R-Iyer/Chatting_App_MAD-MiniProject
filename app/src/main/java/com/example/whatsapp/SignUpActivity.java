@@ -17,6 +17,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Date;
+import java.util.Objects;
+
 public class SignUpActivity extends AppCompatActivity {
 
     public ActivitySignUpBinding binding;
@@ -49,12 +52,19 @@ public class SignUpActivity extends AppCompatActivity {
 
                         progressDialog.dismiss();
                         if(task.isSuccessful()) {
-                            Users user = new Users(binding.etUserName.getText().toString(), binding.etEmail.getText().toString(), binding.etPassword.getText().toString(),"offline", false, "null");
 
-                            String id = task.getResult().getUser().getUid();
+//                            long timestamp = new Date().getTime();
+                            Users user = new Users(binding.etUserName.getText().toString(), binding.etEmail.getText().toString(), binding.etPassword.getText().toString(),"online", false, "null");
+
+                            String id = Objects.requireNonNull(task.getResult().getUser()).getUid();
                             database.getReference().child("Users").child(id).setValue(user);
 
                             Toast.makeText(SignUpActivity.this, "User Created Successfully", Toast.LENGTH_SHORT).show();
+                            binding.etEmail.setText("");
+                            binding.etPassword.setText("");
+                            binding.etUserName.setText("");
+                            Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+                            startActivity(intent);
                         }
                         else {
                             Toast.makeText(SignUpActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -68,7 +78,9 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                finish();
             }
         });
 
