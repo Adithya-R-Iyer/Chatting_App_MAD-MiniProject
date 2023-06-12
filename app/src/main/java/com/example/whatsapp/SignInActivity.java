@@ -177,6 +177,7 @@ public class SignInActivity extends AppCompatActivity {
                                     Log.d("gLoginDebug", "Executed");
                                     if (GOOGLE_USER_EXISTS) {
                                         Log.d("gLoginDebug", "Google User Exists");
+                                        database.getReference().child("Users").child(user.getUid()).child("online").setValue("online");
                                     } else {
                                         Users users = new Users();
                                         users.setUserId(user.getUid());

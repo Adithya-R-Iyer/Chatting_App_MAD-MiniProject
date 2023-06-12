@@ -102,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.logout:
 
-//                database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
+                database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
+                Log.d("onlineDebug","logout time set ");
                 auth.signOut();
                 Intent intent2 = new Intent(MainActivity.this, SignInActivity.class);
                 intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -123,32 +124,9 @@ public class MainActivity extends AppCompatActivity {
 //        System.exit(0);
     }
 
-
-//    private void setOnlineStatus(String online){
-//        DatabaseReference ref= FirebaseDatabase.getInstance().getReference("Users").child(auth.getUid());
-//        HashMap<String,Object> hashMap=new HashMap<>();
-//        Users user=new Users();
-//        hashMap.put("online",online);
-//        ref.updateChildren(hashMap);
-//    }
-
 //    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        setOnlineStatus("online");
+//    protected void onDestroy() {
+//        super.onDestroy();
+// NOTE TO DEVELOPERS :- DON'T USE THE ONDESTROY METHOD TO SET LOGOUT TIME to `online` property of the user...
 //    }
-//
-//
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        setOnlineStatus("offline");
-//    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        database.getReference().child("Users").child(senderUid).child("online").setValue(String.valueOf(new Date().getTime()));
-    }
 }
