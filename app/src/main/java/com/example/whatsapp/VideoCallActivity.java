@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 
+import com.example.whatsapp.APIs.TokenGenerator;
 import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.databinding.ActivityVideoCallBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,9 +52,9 @@ public class VideoCallActivity extends AppCompatActivity {
     // Fill the App ID of your project generated on Agora Console.
     private final String appId = "ec3d7fe7796e45c6bef121efb7f11d4c";
     // Fill the channel name.
-    private String channelName = "AkChatRoom";
+    private String channelName = "";
     // Fill the temp token generated on Agora Console.
-    private String token = "007eJxTYDgq6MH69L/yAbfjd96HuGcfC7deovWAr6zJ++wa907l614KDKnJxinmaanm5pZmqSamyWZJqWmGRoapaUnmaYaGKSbJJltbUxoCGRkuK9syMzJAIIjPxeCY7ZyRWBKUn5/LwAAAPN0h/Q==";
+    private String token = "";
     // An integer that identifies the local user.
     private int uid = 0;
     private boolean isJoined = false;
@@ -78,9 +79,6 @@ public class VideoCallActivity extends AppCompatActivity {
 
     //one who makes the call
     String callerId = "";
-
-    //Id of the person receiving the call
-    String pickerId = "";
 
     private boolean checkSelfPermission()
     {
@@ -131,42 +129,6 @@ public class VideoCallActivity extends AppCompatActivity {
         agoraEngine.setupLocalVideo(new VideoCanvas(localSurfaceView, VideoCanvas.RENDER_MODE_HIDDEN, 0));
     }
 
-    public void joinChannel(View view) {
-        if (checkSelfPermission()) {
-            ChannelMediaOptions options = new ChannelMediaOptions();
-
-            // For a Video call, set the channel profile as COMMUNICATION.
-            options.channelProfile = Constants.CHANNEL_PROFILE_COMMUNICATION;
-            // Set the client role as BROADCASTER or AUDIENCE according to the scenario.
-            options.clientRoleType = Constants.CLIENT_ROLE_BROADCASTER;
-            // Display LocalSurfaceView.
-            setupLocalVideo();
-            localSurfaceView.setVisibility(View.VISIBLE);
-            // Start local preview.
-            agoraEngine.startPreview();
-            // Join the channel with a temp token.
-            // You need to specify the user ID yourself, and ensure that it is unique in the channel.
-            agoraEngine.joinChannel(token, channelName, uid, options);
-        } else {
-            Toast.makeText(getApplicationContext(), "Permissions was not granted", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void leaveChannel(View view) {
-        if (!isJoined) {
-            showMessage("Join a channel first");
-        } else {
-            agoraEngine.leaveChannel();
-            showMessage("You left the channel");
-            // Stop remote video rendering.
-            if (remoteSurfaceView != null) remoteSurfaceView.setVisibility(View.GONE);
-            // Stop local video rendering.
-            if (localSurfaceView != null) localSurfaceView.setVisibility(View.GONE);
-            isJoined = false;
-        }
-    }
-
-
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
         @Override
         // Listen for the remote host joining the channel to get the uid of the host.
@@ -201,7 +163,24 @@ public class VideoCallActivity extends AppCompatActivity {
         SR_TOKEN =  getIntent().getIntExtra("srToken", 0 );
         Log.d("videoCallDebug", receiverId);
 
-        if(SR_TOKEN == 1) {
+        //Creating a unique channel name and generating a token - valid for an hour
+        channelName = callerId+receiverId;
+        try {
+            token = TokenGenerator.generateToken(channelName);
+        } catch (Exception e) {
+            Toast.makeText(this, "Token Generation Failed. Exiting", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(VideoCallActivity.this, MainActivity.class);
+            intent.putExtra("intentToken", 1);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue("null");
+            database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(false);
+            EXECUTION_TOKEN = 0; // STOP Runnable
+            startActivity(intent);
+            Toast.makeText(getApplicationContext(), "Video Chat Ended", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        if(SR_TOKEN == 1) { //CALLER
             database.getReference().child("Users").child(receiverId).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -229,30 +208,6 @@ public class VideoCallActivity extends AppCompatActivity {
             });
         }
 
-
-//        pickerId = getIntent().getStringExtra("pickerId");
-//        Log.d("videoCallDebug", pickerId);
-//        try {
-//            InputStream inputStream = assetManager.open("secrets.properties");
-//            properties.load(inputStream);
-//
-//            appId = properties.getProperty("APP_ID");
-//            channelName = properties.getProperty("CHANNEL_NAME");
-//            token = properties.getProperty("TOKEN");
-//
-//            // Check if any of the properties are null
-//            if (appId == null || channelName == null || token == null) {
-//                throw new IOException("Failed to load Chat Room Details. Properties are null.");
-//            }
-//
-//            Log.d("videoCallDebug", appId + " " + channelName + " " + token);
-//            inputStream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Toast.makeText(this, "Failed to load Chat Room Details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
-
-
         if(!checkSelfPermission()) {
             ActivityCompat.requestPermissions(this, REQUESTED_PERMISSIONS, PERMISSION_REQ_ID);
         }
@@ -271,14 +226,15 @@ public class VideoCallActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue("null");
                 database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(false);
-                EXECUTION_TOKEN = 0; // STOP Runnable
+                if(SR_TOKEN==1)
+                    EXECUTION_TOKEN = 0; // STOP Runnable
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "Video Chat Ended", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
 
-        if(SR_TOKEN==1 && !receiverAvailableForCalls) {
+//        if(!receiverAvailableForCalls) {
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
@@ -292,16 +248,21 @@ public class VideoCallActivity extends AppCompatActivity {
                                 assert user != null;
                                 Boolean value = user.getAvailableForCalls();
                                 String incomingCall = user.getIncomingVideoCall();
-                                if (Boolean.FALSE.equals(value) && incomingCall.equals("null")) {
+                                if (incomingCall.equals("null")) {
                                     leaveCall();
                                     Intent intent = new Intent(VideoCallActivity.this, MainActivity.class);
                                     intent.putExtra("intentToken", 1);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(intent);
-                                    Toast.makeText(getApplicationContext(), "Call Ended", Toast.LENGTH_SHORT).show();
+                                    if(SR_TOKEN ==1)
+                                        Toast.makeText(getApplicationContext(), "Receiver Ended The Call", Toast.LENGTH_LONG).show();
+                                    else if(SR_TOKEN ==2)
+                                        Toast.makeText(getApplicationContext(), "You Ended The Call", Toast.LENGTH_LONG).show();
+                                    timer.cancel();
                                     finish();
-                                } else if (Boolean.TRUE.equals(value) && !incomingCall.equals("null")) {
+                                } else if (Boolean.TRUE.equals(value)) {
                                     receiverAvailableForCalls = true;
+                                    Toast.makeText(getApplicationContext(), "Call in Progress...", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -312,9 +273,9 @@ public class VideoCallActivity extends AppCompatActivity {
                         });
                     }
                 }
-            }, 20000);
+            },0, 5000);
         }
-    }
+//    }
 
     private void leaveCall() {
 
@@ -323,8 +284,10 @@ public class VideoCallActivity extends AppCompatActivity {
         } else {
             agoraEngine.leaveChannel();
             showMessage("Left the Channel. Call Ended");
+            // Stop remote video rendering.
             if(remoteSurfaceView != null )
                 remoteSurfaceView.setVisibility(View.GONE);
+            // Stop local video rendering.
             if(localSurfaceView != null )
                 localSurfaceView.setVisibility(View.GONE);
             isJoined = false;
@@ -335,11 +298,17 @@ public class VideoCallActivity extends AppCompatActivity {
 
         if (checkSelfPermission()) {
             ChannelMediaOptions option = new ChannelMediaOptions();
+            // For a Video call, set the channel profile as COMMUNICATION.
             option.channelProfile = Constants.CHANNEL_PROFILE_COMMUNICATION;
+            // Set the client role as BROADCASTER or AUDIENCE according to the scenario.
             option.clientRoleType = Constants.CLIENT_ROLE_BROADCASTER;
+            // Display LocalSurfaceView.
             setupLocalVideo();
             localSurfaceView.setVisibility(View.VISIBLE);
+            // Start local preview.
             agoraEngine.startPreview();
+            // Join the channel with a temp token.
+            // You need to specify the user ID yourself, and ensure that it is unique in the channel.
             agoraEngine.joinChannel(token, channelName, uid, option);
         }else {
             Toast.makeText(getApplicationContext(), "Permission Not Granted", Toast.LENGTH_SHORT).show();

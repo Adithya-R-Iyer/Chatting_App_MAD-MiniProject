@@ -100,10 +100,11 @@ public class CallReceiveActivity extends AppCompatActivity {
                             assert user != null;
                             Boolean isAvailableForCalls = user.getAvailableForCalls();
                             String incomingVideoCall = user.getIncomingVideoCall();
-                            if(Boolean.FALSE.equals(isAvailableForCalls) && incomingVideoCall.equals("null")) {
+                            if(incomingVideoCall.equals("null")) {
                                 Intent intent = new Intent(CallReceiveActivity.this, MainActivity.class);
                                 intent.putExtra("intentToken", 1);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                timer.cancel();
                                 startActivity(intent);
                                 finish();
                             } else {
@@ -121,6 +122,6 @@ public class CallReceiveActivity extends AppCompatActivity {
             }
         };
         // Schedule the task to be executed after 5 seconds
-        timer.schedule(task, 15000);
+        timer.schedule(task,0 ,5000);
     }
 }
