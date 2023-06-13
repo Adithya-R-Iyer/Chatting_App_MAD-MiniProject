@@ -3,6 +3,8 @@ package com.example.whatsapp.Adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +13,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.whatsapp.Models.MessagesModel;
 import com.example.whatsapp.OtherUserProfileActivity;
 import com.example.whatsapp.R;
+import com.example.whatsapp.databinding.SampleImageSenderBinding;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -231,28 +241,44 @@ public class ChatAdapter extends RecyclerView.Adapter{
             }
 
             ((ImgReceiverViewHolder)holder).receiverImgDesc.setText(messagesModel.getMessageDesc());
+
+
             StorageReference fileRef = FirebaseStorage.getInstance().getReferenceFromUrl(messagesModel.getMedia());
-//                    fileRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-//                        @Override
-//                        public void onSuccess(StorageMetadata storageMetadata) {
-//                            // Retrieve the MIME type or file extension from the metadata
-//                            String mimeType = storageMetadata.getContentType();
-//                            String fileExtension = storageMetadata.getPath().substring(storageMetadata.getPath().lastIndexOf("."));
-//
-//                            // Check whether it is an image or video file
-//                            if (mimeType != null && mimeType.startsWith("image/")) {
-//                                // It is an image file
-//                                Log.e("data","this is image!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//                            } else if (fileExtension != null && (fileExtension.equalsIgnoreCase(".mp4") || fileExtension.equalsIgnoreCase(".mov"))) {
-//                                // It is a video file\
-//                                Log.e("data","this is VIDEO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//                            } else {
-//                                // It is neither an image nor a video file
-//
-//                                Log.e("data","NOOOONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//                            }
-//                        }
-//                    });
+
+            fileRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                @Override
+                public void onSuccess(StorageMetadata storageMetadata) {
+                    // Retrieve the MIME type or file extension from the metadata
+                    String mimeType = storageMetadata.getContentType();
+//                    String fileExtension = storageMetadata.getPath().substring(storageMetadata.getPath().lastIndexOf("."));
+
+                    if (mimeType != null && mimeType.startsWith("image/")) {
+                        // It is an image file
+                        Log.e("data","IMAGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        Log.e("fileExtension:",mimeType);
+                    } else if (mimeType != null && (mimeType.equals("video/mp4") || mimeType.equals("video/quicktime"))) {
+                        // It is a video file
+                        Log.e("data","VIDEO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        Glide.with(context).asBitmap().load(messagesModel.getMedia()).into(((ImgReceiverViewHolder)holder).receiverImg);
+                        ((ImgReceiverViewHolder)holder).receiverImg.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Log.e("video message", "hello" );
+                            }
+                        });
+                        Log.e("fileExtension:",mimeType);
+                    } else {
+                        // It is neither an image nor a video file
+                        Log.e("data","NOOOONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        Log.e("fileExtension:",mimeType);
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle the failure case
+                }
+            });
 
             Picasso.get().load(messagesModel.getMedia()).placeholder(R.drawable.profile).into(((ImgReceiverViewHolder)holder).receiverImg);
             ((ImgReceiverViewHolder)holder).receiverTime.setText(timeString);
@@ -274,41 +300,45 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
             ((ImgSenderViewHolder)holder).senderImgDesc.setText(messagesModel.getMessageDesc());
 
-//            database.getReference().child("chats").child(userid.getUid()+recvId).addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    MessagesModel messagesModel1=snapshot.getValue(MessagesModel.class);
-//
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//                    Toast.makeText(context, "some error", Toast.LENGTH_SHORT).show();
-//                }
-//            });
             StorageReference fileRef = FirebaseStorage.getInstance().getReferenceFromUrl(messagesModel.getMedia());
 
-//            fileRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-//                @Override
-//                public void onSuccess(StorageMetadata storageMetadata) {
-//                    // Retrieve the MIME type or file extension from the metadata
-//                    String mimeType = storageMetadata.getContentType();
+            fileRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                @Override
+                public void onSuccess(StorageMetadata storageMetadata) {
+                    // Retrieve the MIME type or file extension from the metadata
+                    String mimeType = storageMetadata.getContentType();
 //                    String fileExtension = storageMetadata.getPath().substring(storageMetadata.getPath().lastIndexOf("."));
-//
-//                    // Check whether it is an image or video file
-//                    if (mimeType != null && mimeType.startsWith("image/")) {
-//                        // It is an image file
-//                        Log.e("data","this is image!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//                    } else if (fileExtension != null && (fileExtension.equalsIgnoreCase(".mp4") || fileExtension.equalsIgnoreCase(".mov"))) {
-//                        // It is a video file\
-//                        Log.e("data","this is VIDEO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//                    } else {
-//                        // It is neither an image nor a video file
-//
-//                        Log.e("data","NOOOONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//                    }
-//                }
-//            });
+
+                    if (mimeType != null && mimeType.startsWith("image/")) {
+                        // It is an image file
+                        Log.e("data","IMAGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        ((ImgSenderViewHolder)holder).vidIndi.setText("");
+                        Log.e("fileExtension:",mimeType);
+                    } else if (mimeType != null && (mimeType.equals("video/mp4") || mimeType.equals("video/quicktime"))) {
+                        // It is a video file
+                        Log.e("data","VIDEO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        ((ImgSenderViewHolder)holder).vidIndi.setText("video");
+                        Glide.with(context).asBitmap().load(messagesModel.getMedia()).into(((ImgSenderViewHolder)holder).senderImg);
+                        ((ImgSenderViewHolder)holder).senderImg.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Log.e("video message", "hello" );
+                            }
+                        });
+                        Log.e("fileExtension:",mimeType);
+                    } else {
+                        // It is neither an image nor a video file
+                        Log.e("data","NOOOONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        Log.e("fileExtension:",mimeType);
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle the failure case
+                }
+            });;
+
 
             Picasso.get().load(messagesModel.getMedia()).placeholder(R.drawable.profile).into(((ImgSenderViewHolder)holder).senderImg);
             ((ImgSenderViewHolder)holder).senderTime.setText(timeString);
@@ -394,7 +424,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
     public class ImgSenderViewHolder extends RecyclerView.ViewHolder {
 
         ImageView senderImg;
-        TextView senderImgDesc, senderTime, etDate;
+        TextView senderImgDesc, senderTime, etDate,vidIndi;
 
         public ImgSenderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -402,6 +432,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
             senderImgDesc = itemView.findViewById(R.id.senderImgText);
             senderTime = itemView.findViewById(R.id.senderImgTime);
             etDate = itemView.findViewById(R.id.etDate);
+            vidIndi=itemView.findViewById(R.id.VidIndicator);
         }
     }
 

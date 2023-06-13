@@ -43,19 +43,20 @@
             app:layout_constraintGuide_end="16dp" />
 
         <ImageView
-            android:id="@+id/SenderImg"
-            android:layout_width="261dp"
-            android:layout_height="184dp"
-            android:layout_marginLeft="8dp"
+            android:id="@+id/SenderVid"
+            android:layout_width="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/senderVidText"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/VidIndicator"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="100dp"
             app:srcCompat="@drawable/image_placeholder" />
 
         <TextView
-            android:id="@+id/senderImgText"
+            android:id="@+id/senderVidText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -66,14 +67,14 @@
             android:minWidth="50dp"
             android:text="TextViewaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             android:textColor="#000000"
-            app:layout_constraintBottom_toTopOf="@+id/senderImgTime"
+            app:layout_constraintBottom_toTopOf="@+id/senderVidTime"
             app:layout_constraintEnd_toStartOf="@+id/guideline5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/VidIndicator"
+            app:layout_constraintTop_toBottomOf="@+id/SenderVid"
             app:layout_constraintVertical_bias="0.5" />
 
         <TextView
-            android:id="@+id/senderImgTime"
+            android:id="@+id/senderVidTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="4dp"
@@ -83,17 +84,5 @@
             android:textSize="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline5" />
-
-        <TextView
-            android:id="@+id/VidIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text=""
-            android:textColor="@color/grayBackground"
-            app:layout_constraintBottom_toTopOf="@id/senderImgText"
-            app:layout_constraintEnd_toStartOf="@+id/guideline5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/SenderImg" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>

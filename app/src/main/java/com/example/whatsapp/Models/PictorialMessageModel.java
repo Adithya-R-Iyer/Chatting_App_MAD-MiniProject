@@ -21,6 +21,10 @@ public class PictorialMessageModel {
         this.media=media;
     }
 
+    public PictorialMessageModel(){
+
+    }
+
     public String getuId() {
         return uId;
     }

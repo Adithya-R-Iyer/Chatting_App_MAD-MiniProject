@@ -6,17 +6,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.whatsapp.Adapters.ChatAdapter;
 import com.example.whatsapp.Models.MessagesModel;
 
@@ -377,7 +381,18 @@ public class ChatDetailActivity extends AppCompatActivity {
                     bottomSheetDialogImage.setContentView(previewBottomSheetDialogBinding.getRoot());
                     bottomSheetDialogImage.show();
 
-                    previewBottomSheetDialogBinding.imgMessage.setImageURI(imageUri);
+                    String mediaType = getMediaType(imageUri);
+
+                    if(mediaType.equals("image"))
+                    {
+                        previewBottomSheetDialogBinding.imgMessage.setImageURI(imageUri);
+                    }
+                    else if(mediaType.equals("video"))
+                    {
+                        Glide.with(ChatDetailActivity.this).asBitmap().load(imageUri).into(previewBottomSheetDialogBinding.imgMessage);
+                    }
+
+
 //                    Picasso.get().load(imageUri).placeholder(R.drawable.profile).into(previewBottomSheetDialogBinding.imgMessage);
                     Toast.makeText(this, imageUri.toString(), Toast.LENGTH_SHORT).show();
 
@@ -403,6 +418,7 @@ public class ChatDetailActivity extends AppCompatActivity {
                                                 picMsg.setTimestamp(new Date().getTime());
                                                 picMsg.setMedia(uri.toString());
                                                 picMsg.setMessageDesc(previewBottomSheetDialogBinding.edtGetMsgDescription.getText().toString());
+
                                                 // Here .push() ensures that a new Id is created with the help of the TimeStamp ...whenever a new message is sent -> Push is usually used to create unique id's
                                                 database.getReference().child("chats").child(senderRoom).push().setValue(picMsg).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -428,6 +444,21 @@ public class ChatDetailActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private String getMediaType(Uri imageUri) {
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+
+        String extension = mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(imageUri));
+
+        if (extension != null && extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg") || extension.equalsIgnoreCase("png")) {
+            return "image";
+        } else if (extension != null && (extension.equalsIgnoreCase("mp4") || extension.equalsIgnoreCase("mov"))) {
+            return "video";
+        } else {
+            return "unknown";
+        }
     }
 
     //method to calculate the delay of after how much time the message should be sent
