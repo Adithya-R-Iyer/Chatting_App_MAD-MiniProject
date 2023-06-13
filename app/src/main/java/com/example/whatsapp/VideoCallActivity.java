@@ -4,10 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 
-import com.example.whatsapp.APIs.TokenGenerator;
+import com.example.whatsapp.Services.TokenGenerator;
 import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.databinding.ActivityVideoCallBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,10 +25,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 

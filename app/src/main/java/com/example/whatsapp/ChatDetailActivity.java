@@ -1,5 +1,7 @@
 package com.example.whatsapp;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,14 +23,18 @@ import com.example.whatsapp.Adapters.ChatAdapter;
 import com.example.whatsapp.Models.MessagesModel;
 
 import com.example.whatsapp.Models.Users;
+import com.example.whatsapp.Services.FCMSendMessageService;
 import com.example.whatsapp.databinding.ActivityChatDetailBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -247,6 +253,29 @@ public class ChatDetailActivity extends AppCompatActivity {
                 final MessagesModel messagesModel = new MessagesModel(senderId, message);
                 messagesModel.setTimestamp(new Date().getTime());
                 binding.etMessage.setText("");
+
+                //CODE to send notification to the receiver whenever a new message is sent from the sender end
+//                database.getReference().child("Users").child(receiverId).child("deviceId").addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        String receiverDeviceId = snapshot.getValue(String.class);
+//                        database.getReference().child("Users").child(senderId).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                                String senderUserName = snapshot.getValue(String.class);
+//                                try {
+//                                    FCMSendMessageService.sendMessage(ChatDetailActivity.this, receiverDeviceId, senderUserName, message);
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                            @Override
+//                            public void onCancelled(@NonNull DatabaseError error) {}
+//                        });
+//                    }
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {}
+//                });
 
                 // Here .push() ensures that a new Id is created with the help of the TimeStamp ...whenever a new message is sent -> Push is usually used to create unique id's
                 database.getReference().child("chats").child(senderRoom).push().setValue(messagesModel).addOnSuccessListener(new OnSuccessListener<Void>() {

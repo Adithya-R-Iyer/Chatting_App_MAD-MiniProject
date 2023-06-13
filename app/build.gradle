@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.whatsapp"
-        minSdk 21
+        minSdk 26
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -70,6 +70,12 @@ dependencies {
 
     //commons-codec API to enable app to access the token automatically
     implementation files('libs/commons-codec-1.15.jar')
+//    implementation platform('com.google.firebase:firebase-bom:32.1.0')    //Duplicate library
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.android.volley:volley:1.2.1'
+//    implementation 'com.google.firebase:firebase-admin:9.1.1'
+//    implementation 'com.google.auth:google-auth-library-oauth2-http:1.12.1'       //Conflicts with the FirebaseAuth and FirebaseDatabase
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

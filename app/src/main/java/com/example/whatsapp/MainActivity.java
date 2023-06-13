@@ -1,5 +1,7 @@
 package com.example.whatsapp;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,12 +16,15 @@ import android.widget.Toast;
 import com.example.whatsapp.Adapters.FragmentsAdapter;
 import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.databinding.ActivityMainBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     String senderUid;
     int INTENT_TOKEN = 0; //From sigin->MainActivity val=0 , from VideoCall->MainActivity val =1
+    String deviceId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,23 @@ public class MainActivity extends AppCompatActivity {
 //        setOnlineStatus("online");
 
         INTENT_TOKEN = getIntent().getIntExtra("intentToken", 0);
+
+        //CODE TO GET THE DEVICE ID - FIREBASE CLOUD MESSAGING
+//        FirebaseMessaging.getInstance().getToken()
+//                .addOnCompleteListener(new OnCompleteListener<String>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<String> task) {
+//                        if (!task.isSuccessful()) {
+//                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+//                            return;
+//                        }
+//
+//                        // Get new FCM registration token
+//                        deviceId = task.getResult();
+//                        Log.d("TOKEN ", deviceId);
+//                    }
+//                });
+//        database.getReference().child("Users").child(auth.getUid()).child("deviceId").setValue(deviceId);
 
         //Incoming VideoCall Code
         database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {

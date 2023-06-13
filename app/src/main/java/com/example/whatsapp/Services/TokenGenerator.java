@@ -1,4 +1,4 @@
-package com.example.whatsapp.APIs;
+package com.example.whatsapp.Services;
 
 import android.util.Log;
 
