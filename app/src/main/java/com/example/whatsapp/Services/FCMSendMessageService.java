@@ -21,10 +21,13 @@ import java.util.Map;
 
 public class FCMSendMessageService {
 
-    private static String BASE_URL = "https://fcm.googleapis.com/fcm/send";
-    private static String SERVER_KEY = "key=AAAAbcHQheU:APA91bGNG00PbIi8l3rT2G3tO_-BMRRyzdVo41X3UutxZuNU_m-KVAO46JG68xx-T1a-MmeacsD4rO3-09BeqzpvYCqO9zQwyXPKdfuRETeKczXFvvgguRu_LuRM_DH7V5zE2-EEHGKi";
+    private static final String BASE_URL = "https://fcm.googleapis.com/fcm/send";
+    private static String SERVER_KEY;
 
-    public static void sendMessage(Context context, String token, String title, String message) throws Exception {
+    public static void sendMessage(Context context, String token, String title, String message, String serverKey) throws Exception {
+
+        SERVER_KEY = serverKey;
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 

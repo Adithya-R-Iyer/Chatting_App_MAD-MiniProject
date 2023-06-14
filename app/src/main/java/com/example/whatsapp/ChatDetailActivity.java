@@ -24,6 +24,7 @@ import com.example.whatsapp.Models.MessagesModel;
 
 import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.Services.FCMSendMessageService;
+import com.example.whatsapp.Services.SecretsManager;
 import com.example.whatsapp.databinding.ActivityChatDetailBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -259,12 +260,13 @@ public class ChatDetailActivity extends AppCompatActivity {
 //                    @Override
 //                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                        String receiverDeviceId = snapshot.getValue(String.class);
+//                        String serverKey = SecretsManager.readSecrets(getApplicationContext(), "firebaseServerKey");
 //                        database.getReference().child("Users").child(senderId).child("userName").addListenerForSingleValueEvent(new ValueEventListener() {
 //                            @Override
 //                            public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                                String senderUserName = snapshot.getValue(String.class);
 //                                try {
-//                                    FCMSendMessageService.sendMessage(ChatDetailActivity.this, receiverDeviceId, senderUserName, message);
+//                                    FCMSendMessageService.sendMessage(ChatDetailActivity.this, receiverDeviceId, senderUserName, message, serverKey);
 //                                } catch (Exception e) {
 //                                    e.printStackTrace();
 //                                }

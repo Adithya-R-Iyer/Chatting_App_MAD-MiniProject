@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.whatsapp.Adapters.FragmentsAdapter;
 import com.example.whatsapp.Models.Users;
+import com.example.whatsapp.Services.SecretsManager;
 import com.example.whatsapp.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

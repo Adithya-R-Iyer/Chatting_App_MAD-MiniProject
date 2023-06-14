@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.whatsapp.Services.SecretsManager;
 import com.example.whatsapp.Services.TokenGenerator;
 import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.databinding.ActivityVideoCallBinding;
@@ -110,7 +111,7 @@ public class VideoCallActivity extends AppCompatActivity {
         remoteSurfaceView = new SurfaceView(VideoCallActivity.this);
         remoteSurfaceView.setZOrderMediaOverlay(true);
         container.addView(remoteSurfaceView);
-        agoraEngine.setupRemoteVideo(new VideoCanvas(remoteSurfaceView, VideoCanvas.RENDER_MODE_FIT, uid));
+        agoraEngine.setupRemoteVideo(new VideoCanvas(remoteSurfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
         // Display RemoteSurfaceView.
         remoteSurfaceView.setVisibility(View.VISIBLE);
     }
@@ -158,10 +159,13 @@ public class VideoCallActivity extends AppCompatActivity {
         SR_TOKEN =  getIntent().getIntExtra("srToken", 0 );
         Log.d("videoCallDebug", receiverId);
 
+        String agoraAppId = SecretsManager.readSecrets(getApplicationContext(), "agoraAppId");
+        String agoraAppCertificate = SecretsManager.readSecrets(getApplicationContext(), "agoraAppCertificate");
+
         //Creating a unique channel name and generating a token - valid for an hour
         channelName = callerId+receiverId;
         try {
-            token = TokenGenerator.generateToken(channelName);
+            token = TokenGenerator.generateToken(channelName, agoraAppId, agoraAppCertificate);
         } catch (Exception e) {
             Toast.makeText(this, "Token Generation Failed. Exiting", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(VideoCallActivity.this, MainActivity.class);
