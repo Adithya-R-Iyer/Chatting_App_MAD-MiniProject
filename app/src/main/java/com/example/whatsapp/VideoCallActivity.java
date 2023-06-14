@@ -166,7 +166,7 @@ public class VideoCallActivity extends AppCompatActivity {
 
         //Creating a unique channel name and generating a token - valid for an hour
         channelName = callerId+receiverId;
-        try {
+        try { // IF communication token cant be generated due to some reasons... then send the user back to the mainActivity
             token = TokenGenerator.generateToken(channelName, appId, agoraAppCertificate);
         } catch (Exception e) {
             Toast.makeText(this, "Token Generation Failed. Exiting", Toast.LENGTH_SHORT).show();
@@ -209,6 +209,7 @@ public class VideoCallActivity extends AppCompatActivity {
             });
         }
 
+        //Initially Retrieve the profile pic uri's of respective caller and receiver
         database.getReference().child("Users").child(callerId).child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -234,8 +235,9 @@ public class VideoCallActivity extends AppCompatActivity {
         setupVideoSDKEngine();
         //Code to Establish Call Directly
         joinCall();
+        Toast.makeText(this, "Click Your Vedio Display Frame to Toggle Camera Position.", Toast.LENGTH_LONG).show();
 
-        //Listening to VIDEO AND AUDIO TOGGLE
+        //Listening to VIDEO AND AUDIO TOGGLE -> If toggled at either end... apply the required changes
         if(Objects.equals(auth.getUid(), callerId)) {
             database.getReference().child("Users").child(receiverId).child("toggleVideo").addValueEventListener(new ValueEventListener() {
                 @Override
@@ -363,6 +365,15 @@ public class VideoCallActivity extends AppCompatActivity {
             }
         });
 
+        //Code to switch camera angle when clicked on local video frame
+        binding.localVideoViewContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                agoraEngine.switchCamera();
+            }
+        });
+
+        //code to check if the receive rejected the call... if so ...terminate the user and send him back to main-activity within a few seconds
 //        if(!receiverAvailableForCalls) {
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     String senderUid;
-    int INTENT_TOKEN = 0; //From signin->MainActivity val=0 , from VideoCall->MainActivity val =1
+    int INTENT_TOKEN = 0; //From signin->MainActivity val=0 , from VideoCall or VoiceCall ->MainActivity val =1
     String deviceId;
 
     @Override

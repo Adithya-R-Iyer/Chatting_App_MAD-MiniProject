@@ -51,7 +51,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/tvUserName"
+            android:id="@+id/tvRemoteUserName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
@@ -133,6 +133,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/facetime"
+            android:backgroundTint="#B9B8B8"
             android:foregroundTint="#FFFFFF"
             android:padding="3dp"
             android:tint="#FF0000"

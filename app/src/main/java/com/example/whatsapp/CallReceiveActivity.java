@@ -34,6 +34,7 @@ public class CallReceiveActivity extends AppCompatActivity {
         binding =ActivityCallReceiveBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
         setContentView(binding.getRoot());
+        getSupportActionBar().hide();
 
         callerId = getIntent().getStringExtra("callerId");
         receiverId = getIntent().getStringExtra("receiverId");
@@ -91,6 +92,7 @@ public class CallReceiveActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(false);
                 database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue("null");
+                database.getReference().child("Users").child(receiverId).child("incomingVoiceCall").setValue("null");
                 EXECUTION_TOKEN = 0;
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "Video Chat Ended", Toast.LENGTH_SHORT).show();
