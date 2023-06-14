@@ -54,7 +54,7 @@ public class SignUpActivity extends AppCompatActivity {
                         if(task.isSuccessful()) {
 
 //                            long timestamp = new Date().getTime();
-                            Users user = new Users(binding.etUserName.getText().toString(), binding.etEmail.getText().toString(), binding.etPassword.getText().toString(),"online", false, "null", "null");
+                            Users user = new Users(binding.etUserName.getText().toString(), binding.etEmail.getText().toString(), binding.etPassword.getText().toString(),"online", false,"null" ,"null", "null", false, false);
 
                             String id = Objects.requireNonNull(task.getResult().getUser()).getUid();
                             database.getReference().child("Users").child(id).setValue(user);

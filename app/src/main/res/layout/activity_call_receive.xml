@@ -26,7 +26,7 @@
             android:layout_marginBottom="15dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/btnCameraOff"
+                android:id="@+id/btnSpeakerToggle"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="100dp"
@@ -41,7 +41,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/btnCallEnd"
+                android:id="@+id/btnVideoToggle"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="40dp"
@@ -55,11 +55,11 @@
                 app:civ_border_color="#FF0000"
                 app:civ_border_width="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btnCameraOff"
+                app:layout_constraintStart_toEndOf="@+id/btnSpeakerToggle"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/btnMicOff"
+                android:id="@+id/btnMicToggle"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="40dp"
@@ -70,7 +70,7 @@
                 app:civ_border_color="#FFFFFF"
                 app:civ_border_width="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btnCallEnd"
+                app:layout_constraintStart_toEndOf="@+id/btnVideoToggle"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -122,9 +122,9 @@
                 android:id="@+id/btnVoiceMute"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:layout_marginStart="96dp"
-                android:layout_marginTop="10dp"
-                android:padding="11dp"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
                 android:src="@drawable/volume_up"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -134,7 +134,7 @@
                 android:id="@+id/btnRejectCall"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:layout_marginStart="96dp"
+                android:layout_marginLeft="80dp"
                 android:layout_marginTop="50dp"
                 android:layout_marginBottom="10dp"
                 android:padding="3dp"
@@ -144,7 +144,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btnVoiceMute"
-                app:layout_constraintVertical_bias="1.0"
                 app:tint="#42B90F" />
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -152,7 +151,7 @@
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_marginTop="50dp"
-                android:layout_marginEnd="40dp"
+                android:layout_marginRight="80dp"
                 android:layout_marginBottom="10dp"
                 android:padding="3dp"
                 android:src="@drawable/phone_greenbg"
@@ -160,21 +159,18 @@
                 app:civ_border_width="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.6"
-                app:layout_constraintStart_toEndOf="@+id/btnRejectCall"
-                app:layout_constraintTop_toBottomOf="@+id/btnQuickMessage" />
+                app:layout_constraintTop_toBottomOf="@+id/btnQuickMessage"
+                app:layout_constraintVertical_bias="0.0" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/btnQuickMessage"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="4dp"
-                android:padding="12dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="80dp"
+                android:padding="6dp"
                 android:src="@drawable/quick_message"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.454"
-                app:layout_constraintStart_toEndOf="@+id/btnVoiceMute"
                 app:layout_constraintTop_toTopOf="parent" />
 
 

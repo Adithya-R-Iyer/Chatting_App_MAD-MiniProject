@@ -27,7 +27,7 @@ public class CallReceiveActivity extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     String callerId,receiverId,callerUserName, profileImageURI, senderId;
-    int SR_TOKEN, EXECUTION_TOKEN=1; // RUN - 1  , STOP =0
+    int SR_TOKEN, EXECUTION_TOKEN=1, CALL_TYPE_TOKEN; // RUN - 1  , STOP =0
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,9 @@ public class CallReceiveActivity extends AppCompatActivity {
 
         callerId = getIntent().getStringExtra("callerId");
         receiverId = getIntent().getStringExtra("receiverId");
-        SR_TOKEN = getIntent().getIntExtra("srToken", 0);
+        SR_TOKEN = getIntent().getIntExtra("srToken", 0);   //SenderReceiver Token  ->  Sender - 1    Receiver - 2
+        CALL_TYPE_TOKEN = getIntent().getIntExtra("callType", 0);     // Voice or Video Call   ->   VoiceCall - 1    VideoCall - 2
+
         senderId = auth.getUid();  // note that here at this point senderId is equal to call receiver's receiverId
 
         database.getReference().child("Users").child(callerId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -59,14 +61,25 @@ public class CallReceiveActivity extends AppCompatActivity {
         binding.btnAcceptCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(CallReceiveActivity.this, VideoCallActivity.class);
-                database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(true);
-                intent.putExtra("callerId", callerId);
-                intent.putExtra("receiverId", receiverId);
-                intent.putExtra("srToken",2);
-                EXECUTION_TOKEN=0;
-                startActivity(intent);
-                finish();
+                if(CALL_TYPE_TOKEN == 2) {  //VideoCall
+                    Intent intent = new Intent(CallReceiveActivity.this, VideoCallActivity.class);
+                    database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(true);
+                    intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", receiverId);
+                    intent.putExtra("srToken", 2);
+                    EXECUTION_TOKEN = 0;
+                    startActivity(intent);
+                    finish();
+                } else if(CALL_TYPE_TOKEN == 1) {  //Voice Call
+                    Intent intent = new Intent(CallReceiveActivity.this, VoiceCallActivity.class);
+                    database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(true);
+                    intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", receiverId);
+                    intent.putExtra("srToken", 2);
+                    EXECUTION_TOKEN = 0;
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
 
@@ -100,7 +113,8 @@ public class CallReceiveActivity extends AppCompatActivity {
                             assert user != null;
                             Boolean isAvailableForCalls = user.getAvailableForCalls();
                             String incomingVideoCall = user.getIncomingVideoCall();
-                            if(incomingVideoCall.equals("null")) {
+                            String incomingVoiceCall = user.getIncomingVoiceCall();
+                            if(incomingVideoCall.equals("null") && incomingVoiceCall.equals("null")) {
                                 Intent intent = new Intent(CallReceiveActivity.this, MainActivity.class);
                                 intent.putExtra("intentToken", 1);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -111,12 +125,8 @@ public class CallReceiveActivity extends AppCompatActivity {
                                 Toast.makeText(CallReceiveActivity.this, "Please Respond to the Incoming Call...", Toast.LENGTH_SHORT).show();
                             }
                         }
-
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-
+                        public void onCancelled(@NonNull DatabaseError error) {}
                     });
                 }
             }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/whatsapp_bg"
     tools:context=".VideoCallActivity">
 
     <androidx.cardview.widget.CardView
@@ -25,6 +26,20 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"
             android:background="@android:color/darker_gray" />
+
+        <ImageView
+            android:id="@+id/remote_video_view_bg"
+            android:layout_width="320dp"
+            android:layout_height="240dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:contentDescription="TODO"
+            android:visibility="gone" />
 
     </androidx.cardview.widget.CardView>
 
@@ -67,6 +82,19 @@
             android:layout_marginRight="6dp"
             android:layout_marginBottom="6dp"
             android:background="@android:color/darker_gray" />
+
+        <ImageView
+            android:id="@+id/local_video_view_bg"
+            android:layout_width="320dp"
+            android:layout_height="240dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginBottom="6dp"
+            android:visibility="gone" />
     </androidx.cardview.widget.CardView>
 
     <TextView
@@ -91,10 +119,10 @@
         android:layout_marginBottom="20dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/btnCameraOff"
+            android:id="@+id/btnCameraToggle"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginStart="100dp"
+            android:layout_marginStart="75dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:padding="3dp"
@@ -109,7 +137,6 @@
             android:id="@+id/btnCallEnd"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginStart="40dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:background="@drawable/call_end_redbg"
@@ -119,22 +146,23 @@
             app:civ_border_color="#FF0000"
             app:civ_border_width="2dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btnCameraOff"
+            app:layout_constraintEnd_toStartOf="@+id/btnMicToggle"
+            app:layout_constraintStart_toEndOf="@+id/btnCameraToggle"
             app:layout_constraintTop_toTopOf="parent" />
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/btnMicOff"
+            android:id="@+id/btnMicToggle"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginStart="40dp"
             android:layout_marginTop="5dp"
+            android:layout_marginEnd="75dp"
             android:layout_marginBottom="5dp"
             android:background="@drawable/mic_on_whitebg"
             android:padding="3dp"
             app:civ_border_color="#FFFFFF"
             app:civ_border_width="2dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btnCallEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 

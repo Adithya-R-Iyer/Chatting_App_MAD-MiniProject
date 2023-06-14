@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -42,11 +44,8 @@ public class VideoCallActivity extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
-//    Properties properties = new Properties();
-//    AssetManager assetManager = getAssets();
-
     // Fill the App ID of your project generated on Agora Console.
-    private final String appId = "ec3d7fe7796e45c6bef121efb7f11d4c";
+    private String appId = "";
     // Fill the channel name.
     private String channelName = "";
     // Fill the temp token generated on Agora Console.
@@ -72,9 +71,12 @@ public class VideoCallActivity extends AppCompatActivity {
     Boolean receiverAvailableForCalls = false;
     int SR_TOKEN;  // caller - 1   receiver - 2
     int EXECUTION_TOKEN = 1; //RUN = 1  & STOP = 0
+    Boolean isAudio = true;
+    Boolean isVideo = true;
 
     //one who makes the call
     String callerId = "";
+    String callerProfilePicUri, receiverProfilePicUri;
 
     private boolean checkSelfPermission()
     {
@@ -159,13 +161,13 @@ public class VideoCallActivity extends AppCompatActivity {
         SR_TOKEN =  getIntent().getIntExtra("srToken", 0 );
         Log.d("videoCallDebug", receiverId);
 
-        String agoraAppId = SecretsManager.readSecrets(getApplicationContext(), "agoraAppId");
+        appId = SecretsManager.readSecrets(getApplicationContext(), "agoraAppId");
         String agoraAppCertificate = SecretsManager.readSecrets(getApplicationContext(), "agoraAppCertificate");
 
         //Creating a unique channel name and generating a token - valid for an hour
         channelName = callerId+receiverId;
         try {
-            token = TokenGenerator.generateToken(channelName, agoraAppId, agoraAppCertificate);
+            token = TokenGenerator.generateToken(channelName, appId, agoraAppCertificate);
         } catch (Exception e) {
             Toast.makeText(this, "Token Generation Failed. Exiting", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(VideoCallActivity.this, MainActivity.class);
@@ -207,6 +209,23 @@ public class VideoCallActivity extends AppCompatActivity {
             });
         }
 
+        database.getReference().child("Users").child(callerId).child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                callerProfilePicUri = snapshot.getValue(String.class);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+        database.getReference().child("Users").child(receiverId).child("profilepic").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                receiverProfilePicUri = snapshot.getValue(String.class);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+
         if(!checkSelfPermission()) {
             ActivityCompat.requestPermissions(this, REQUESTED_PERMISSIONS, PERMISSION_REQ_ID);
         }
@@ -215,6 +234,44 @@ public class VideoCallActivity extends AppCompatActivity {
         setupVideoSDKEngine();
         //Code to Establish Call Directly
         joinCall();
+
+        //Listening to VIDEO AND AUDIO TOGGLE
+        if(Objects.equals(auth.getUid(), callerId)) {
+            database.getReference().child("Users").child(receiverId).child("toggleVideo").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Boolean toggleVid = snapshot.getValue(Boolean.class);
+                    if(Boolean.TRUE.equals(toggleVid)) {
+                        Picasso.get().load(receiverProfilePicUri).placeholder(R.drawable.profile).into(binding.remoteVideoViewBg);
+                        binding.remoteVideoViewBg.setVisibility(View.VISIBLE);
+                        binding.remoteVideoViewContainer.setVisibility(View.GONE);
+                    } else if(Boolean.FALSE.equals(toggleVid)){
+                        binding.remoteVideoViewBg.setVisibility(View.GONE);
+                        binding.remoteVideoViewContainer.setVisibility(View.VISIBLE);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {}
+            });
+        } else if(Objects.equals(auth.getUid(), receiverId)) {
+            database.getReference().child("Users").child(callerId).child("toggleVideo").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Boolean toggleVid = snapshot.getValue(Boolean.class);
+                    if(Boolean.TRUE.equals(toggleVid)) {
+                        Picasso.get().load(callerProfilePicUri).placeholder(R.drawable.profile).into(binding.remoteVideoViewBg);
+                        binding.remoteVideoViewBg.setVisibility(View.VISIBLE);
+                        binding.remoteVideoViewContainer.setVisibility(View.GONE);
+                    } else if(Boolean.FALSE.equals(toggleVid)){
+                        binding.remoteVideoViewBg.setVisibility(View.GONE);
+                        binding.remoteVideoViewContainer.setVisibility(View.VISIBLE);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {}
+            });
+        }
+
 
         binding.btnCallEnd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,11 +282,84 @@ public class VideoCallActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue("null");
                 database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").setValue(false);
+                database.getReference().child("Users").child(callerId).child("toggleVideo").setValue(false);
+                database.getReference().child("Users").child(callerId).child("toggleAudio").setValue(false);
+                database.getReference().child("Users").child(receiverId).child("toggleVideo").setValue(false);
+                database.getReference().child("Users").child(receiverId).child("toggleAudio").setValue(false);
                 if(SR_TOKEN==1)
                     EXECUTION_TOKEN = 0; // STOP Runnable
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "Video Chat Ended", Toast.LENGTH_SHORT).show();
                 finish();
+            }
+        });
+
+        binding.btnCameraToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isVideo = !isVideo;
+//                agoraEngine.muteLocalVideoStream(isVideo);
+                if (isVideo) {
+
+                    binding.btnCameraToggle.setImageResource(R.drawable.camera_whitebg);
+                    agoraEngine.muteLocalVideoStream(false); // Resume local video stream
+                    agoraEngine.muteRemoteVideoStream(uid, false); // Resume remote video stream
+
+                    if(auth.getUid().equals(callerId)) {
+                        database.getReference().child("Users").child(callerId).child("toggleVideo").setValue(false);
+                    } else if(auth.getUid().equals(receiverId)) {
+                        database.getReference().child("Users").child(receiverId).child("toggleVideo").setValue(false);
+                    }
+                    binding.localVideoViewBg.setVisibility(View.GONE);
+                    binding.localVideoViewContainer.setVisibility(View.VISIBLE);
+
+                } else {
+
+                    binding.btnCameraToggle.setImageResource(R.drawable.camera_off_whitebg);
+                    agoraEngine.muteLocalVideoStream(true); // Pause local video stream
+                    agoraEngine.muteRemoteVideoStream(uid, true); // Pause remote video stream
+
+                    if(auth.getUid().equals(callerId)) {
+                        Picasso.get().load(callerProfilePicUri).placeholder(R.drawable.profile).into(binding.localVideoViewBg);
+                        database.getReference().child("Users").child(callerId).child("toggleVideo").setValue(true);
+                    } else if(auth.getUid().equals(receiverId)) {
+                        Picasso.get().load(receiverProfilePicUri).placeholder(R.drawable.profile).into(binding.localVideoViewBg);
+                        database.getReference().child("Users").child(receiverId).child("toggleVideo").setValue(true);
+                    }
+                    binding.localVideoViewBg.setVisibility(View.VISIBLE);
+                    binding.localVideoViewContainer.setVisibility(View.GONE);
+
+                }
+            }
+        });
+
+        binding.btnMicToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isAudio = !isAudio;
+                if (isAudio) {
+                    binding.btnMicToggle.setImageResource(R.drawable.mic_on_whitebg);
+                    agoraEngine.muteLocalAudioStream(false);
+                    agoraEngine.muteRemoteAudioStream(uid, false);
+
+                    if(auth.getUid().equals(callerId)) {
+                        database.getReference().child("Users").child(callerId).child("toggleAudio").setValue(false);
+                    } else if(auth.getUid().equals(receiverId)) {
+                        database.getReference().child("Users").child(receiverId).child("toggleAudio").setValue(false);
+                    }
+                    Toast.makeText(VideoCallActivity.this, "Audio Un-Muted. Speak Now", Toast.LENGTH_SHORT).show();
+                } else {
+                    binding.btnMicToggle.setImageResource(R.drawable.mic_off_whitebg);
+                    agoraEngine.muteLocalAudioStream(true);
+                    agoraEngine.muteRemoteAudioStream(uid, true);
+
+                    if(auth.getUid().equals(callerId)) {
+                        database.getReference().child("Users").child(callerId).child("toggleAudio").setValue(true);
+                    } else if(auth.getUid().equals(receiverId)) {
+                        database.getReference().child("Users").child(receiverId).child("toggleAudio").setValue(true);
+                    }
+                    Toast.makeText(VideoCallActivity.this, "Audio is Muted. Click Mic to Speak", Toast.LENGTH_SHORT).show();
+                }   
             }
         });
 

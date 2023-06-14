@@ -65,17 +65,32 @@ public class GroupChatActivity extends AppCompatActivity {
                     Intent intent = new Intent(GroupChatActivity.this, CallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
                     intent.putExtra("receiverId", auth.getUid());
-                    intent.putExtra("srToken", 2);
+                    intent.putExtra("srToken", 2); // Call Receiver
+                    intent.putExtra("callType", 2); // video Call
                     startActivity(intent);
-//                    onCallRequest(snapshot.getValue(String.class));
-                    Log.d("vcDebug","onCallRequest method executed...");
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
 
+        //Incoming VoiceCall Code
+        database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVoiceCall").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String callerId = snapshot.getValue(String.class);
+                if(!Objects.equals(callerId, "null")) {
+                    Log.d("vcDebug","onCallRequest method starting...");
+                    Intent intent = new Intent(GroupChatActivity.this, CallReceiveActivity.class);
+                    intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", auth.getUid());
+                    intent.putExtra("srToken", 2); // Call Receiver
+                    intent.putExtra("callType", 1); // voice Call
+                    startActivity(intent);
+                }
             }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();

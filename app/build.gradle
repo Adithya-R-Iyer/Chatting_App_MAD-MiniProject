@@ -65,7 +65,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
 
-    //agora for Real time Communication
+    //agora for Real time Communication - both audio and video
     implementation 'io.agora.rtc:full-sdk:4.0.1'
 
     //commons-codec API to enable app to access the token automatically

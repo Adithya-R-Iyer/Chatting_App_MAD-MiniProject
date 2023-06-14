@@ -57,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        //Incoming VideoCall Code
+        //Incoming VideoCall Detection
         database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVideoCall").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -67,18 +67,35 @@ public class SettingsActivity extends AppCompatActivity {
                     Intent intent = new Intent(SettingsActivity.this, CallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
                     intent.putExtra("receiverId", auth.getUid());
-                    intent.putExtra("srToken", 2);
+                    intent.putExtra("srToken", 2); //Call Receiver
+                    intent.putExtra("callType", 2); //Video Call
                     startActivity(intent);
-//                    onCallRequest(snapshot.getValue(String.class));
-                    Log.d("vcDebug","onCallRequest method executed...");
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
+
+        //Incoming VoiceCall Detection
+        database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVoiceCall").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String callerId = snapshot.getValue(String.class);
+                if(!Objects.equals(callerId, "null")) {
+                    Log.d("vcDebug","onCallRequest method starting...");
+                    Intent intent = new Intent(SettingsActivity.this, CallReceiveActivity.class);
+                    intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", auth.getUid());
+                    intent.putExtra("srToken", 2); //Call Receiver
+                    intent.putExtra("callType", 1); //VoiceCall
+                    startActivity(intent);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+
+
 
         binding.saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override

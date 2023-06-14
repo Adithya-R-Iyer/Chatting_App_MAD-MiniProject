@@ -59,9 +59,6 @@ public class ChatDetailActivity extends AppCompatActivity {
     private Handler handler;
     private Runnable task;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //initialise the handler
@@ -103,17 +100,32 @@ public class ChatDetailActivity extends AppCompatActivity {
                     Intent intent = new Intent(ChatDetailActivity.this, CallReceiveActivity.class);
                     intent.putExtra("callerId", callerId);
                     intent.putExtra("receiverId", auth.getUid());
-                    intent.putExtra("srToken", 2);
+                    intent.putExtra("srToken", 2);  // Call Receiver
+                    intent.putExtra("callType", 2); //Video Call
                     startActivity(intent);
-//                    onCallRequest(snapshot.getValue(String.class));
-                    Log.d("vcDebug","onCallRequest method executed...");
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
 
+        //Incoming VoiceCall Code
+        database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("incomingVoiceCall").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String callerId = snapshot.getValue(String.class);
+                if(!Objects.equals(callerId, "null")) {
+                    Log.d("vcDebug","onCallRequest method starting...");
+                    Intent intent = new Intent(ChatDetailActivity.this, CallReceiveActivity.class);
+                    intent.putExtra("callerId", callerId);
+                    intent.putExtra("receiverId", auth.getUid());
+                    intent.putExtra("srToken", 2);  // Call Receiver
+                    intent.putExtra("callType", 1); //Voice Call
+                    startActivity(intent);
+                }
             }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
 
         binding.btnVideoCall.setOnClickListener(new View.OnClickListener() {
@@ -122,7 +134,7 @@ public class ChatDetailActivity extends AppCompatActivity {
                 Intent intent = new Intent(ChatDetailActivity.this, VideoCallActivity.class);
                 intent.putExtra("receiverId",receiverId);
                 intent.putExtra("callerId", senderId);
-                intent.putExtra("srToken",1);
+                intent.putExtra("srToken",1);  //Sender or caller
                 database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue(senderId);
                 startActivity(intent);
             }
@@ -131,7 +143,12 @@ public class ChatDetailActivity extends AppCompatActivity {
         binding.btnVoiceCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(ChatDetailActivity.this, VoiceCallActivity.class);
+                intent.putExtra("receiverId",receiverId);
+                intent.putExtra("callerId", senderId);
+                intent.putExtra("srToken",1); //  Sender or caller
+                database.getReference().child("Users").child(receiverId).child("incomingVoiceCall").setValue(senderId);
+                startActivity(intent);
             }
         });
 
@@ -147,7 +164,6 @@ public class ChatDetailActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
 
 
         //HERE ONLINE CHECK
@@ -188,7 +204,6 @@ public class ChatDetailActivity extends AppCompatActivity {
                             onlineCheck.setText("Last active at "+databaseDateString);
                         }
 
-
 //                        onlineCheck.setText(online);
 //                        Toast.makeText(ChatDetailActivity.this,online,Toast.LENGTH_LONG).show();
 
@@ -206,8 +221,6 @@ public class ChatDetailActivity extends AppCompatActivity {
 
             }
         });
-
-
 
 
         final ArrayList<MessagesModel> messagesModels = new ArrayList<>();
@@ -356,7 +369,6 @@ public class ChatDetailActivity extends AppCompatActivity {
                 final MessagesModel messagesModel = new MessagesModel(senderId, message);
                 messagesModel.setTimestamp(new Date().getTime());
 
-
                 // Here .push() ensures that a new Id is created with the help of the TimeStamp ...whenever a new message is sent -> Push is usually used to create unique id's
                 database.getReference().child("chats").child(senderRoom).push().setValue(messagesModel).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -370,11 +382,8 @@ public class ChatDetailActivity extends AppCompatActivity {
                         });
                     }
                 });
-
             }
         };
-
-
     }
     private void SpeakNow(View view){
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -435,7 +444,6 @@ public class ChatDetailActivity extends AppCompatActivity {
         handler.postDelayed(task, delay);
     }
 
-
     //destroy method
     @Override
     protected void onDestroy() {
@@ -444,8 +452,4 @@ public class ChatDetailActivity extends AppCompatActivity {
         // Remove the task from the handler if the activity is destroyed
         handler.removeCallbacks(task);
     }
-
-
-
-
 }

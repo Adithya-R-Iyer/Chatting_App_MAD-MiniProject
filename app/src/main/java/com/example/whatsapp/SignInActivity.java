@@ -179,15 +179,15 @@ public class SignInActivity extends AppCompatActivity {
                                         Log.d("gLoginDebug", "Google User Exists");
                                         database.getReference().child("Users").child(user.getUid()).child("online").setValue("online");
                                     } else {
-                                        Users users = new Users();
-                                        users.setUserId(user.getUid());
-                                        users.setUserName(user.getDisplayName());
-                                        users.setProfilepic(Objects.requireNonNull(user.getPhotoUrl()).toString());
-                                        users.setOnline("online");
-                                        users.setAvailableForCalls(false);
-                                        users.setIncomingVideoCall("null");
-                                        users.setDeviceId("null");
-
+                                        Users users = new Users(Objects.requireNonNull(user.getPhotoUrl()).toString(), user.getDisplayName(), user.getUid(), "online", "null", "null", "null", false, false, false);
+//                                        users.setUserId(user.getUid());
+//                                        users.setUserName(user.getDisplayName());
+//                                        users.setProfilepic(Objects.requireNonNull(user.getPhotoUrl()).toString());
+//                                        users.setOnline("online");
+//                                        users.setIsAvailableForCalls(false);
+//                                        users.setIncomingVideoCall("null");
+//                                        users.setIncomingVoiceCall("null");
+//                                        users.setDeviceId("null");
                                         database.getReference().child("Users").child(user.getUid()).setValue(users);
                                     }
 
