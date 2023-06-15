@@ -3,6 +3,7 @@ package com.example.whatsapp.Adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.util.Log;
@@ -25,6 +26,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.whatsapp.Models.MessagesModel;
 import com.example.whatsapp.OtherUserProfileActivity;
 import com.example.whatsapp.R;
+import com.example.whatsapp.VideoPlayerActivity;
 import com.example.whatsapp.databinding.SampleImageSenderBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -263,7 +265,19 @@ public class ChatAdapter extends RecyclerView.Adapter{
                         ((ImgReceiverViewHolder)holder).receiverImg.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Log.e("video message", "hello" );
+                                Context context1= view.getContext();
+
+//                                Log.e("video", "hello i am vid" );
+
+                                Intent intent1=new Intent(context, VideoPlayerActivity.class);
+
+                                intent1.putExtra("vidUri",messagesModel.getMedia());
+//                                Log.e("video messagegg", "hello again" );
+                                context.startActivity(intent1);
+
+
+
+
                             }
                         });
                         Log.e("fileExtension:",mimeType);
@@ -322,7 +336,21 @@ public class ChatAdapter extends RecyclerView.Adapter{
                         ((ImgSenderViewHolder)holder).senderImg.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+
                                 Log.e("video message", "hello" );
+
+                                Context context1= view.getContext();
+
+//                                Log.e("video", "hello i am vid" );
+
+                                Intent intent1=new Intent(context1, VideoPlayerActivity.class);
+
+                                intent1.putExtra("vidUri",messagesModel.getMedia());
+//                                Log.e("video messagegg", "hello again" );
+                                context1.startActivity(intent1);
+
+
+
                             }
                         });
                         Log.e("fileExtension:",mimeType);
