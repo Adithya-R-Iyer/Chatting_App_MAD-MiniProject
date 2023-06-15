@@ -35,13 +35,15 @@
 
         <ImageView
             android:id="@+id/ReceiverImg"
-            android:layout_width="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="261dp"
+            android:layout_height="184dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/receiverImgText"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="20dp"
-            android:layout_height="100dp"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/image_placeholder" />
 
         <TextView

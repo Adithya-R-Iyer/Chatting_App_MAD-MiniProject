@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.whatsapp.Models.MessagesModel;
 import com.example.whatsapp.OtherUserProfileActivity;
+import com.example.whatsapp.PictureDisplayActivity;
 import com.example.whatsapp.R;
 import com.example.whatsapp.VideoPlayerActivity;
 import com.example.whatsapp.databinding.SampleImageSenderBinding;
@@ -257,6 +258,22 @@ public class ChatAdapter extends RecyclerView.Adapter{
                     if (mimeType != null && mimeType.startsWith("image/")) {
                         // It is an image file
                         Log.e("data","IMAGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+                        ((ImgReceiverViewHolder)holder).receiverImg.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+//                                Toast.makeText(context,messagesModel.getMedia() , Toast.LENGTH_SHORT).show();
+                                Context context1= view.getContext();
+
+//                                Log.e("video", "hello i am vid" );
+
+                                Intent intent1=new Intent(context1, PictureDisplayActivity.class);
+
+                                intent1.putExtra("imgUri",messagesModel.getMedia());
+                                context1.startActivity(intent1);
+                            }
+                        });
+
                         Log.e("fileExtension:",mimeType);
                     } else if (mimeType != null && (mimeType.equals("video/mp4") || mimeType.equals("video/quicktime"))) {
                         // It is a video file
@@ -267,12 +284,9 @@ public class ChatAdapter extends RecyclerView.Adapter{
                             public void onClick(View view) {
                                 Context context1= view.getContext();
 
-//                                Log.e("video", "hello i am vid" );
-
                                 Intent intent1=new Intent(context, VideoPlayerActivity.class);
 
                                 intent1.putExtra("vidUri",messagesModel.getMedia());
-//                                Log.e("video messagegg", "hello again" );
                                 context.startActivity(intent1);
 
 
@@ -326,7 +340,24 @@ public class ChatAdapter extends RecyclerView.Adapter{
                     if (mimeType != null && mimeType.startsWith("image/")) {
                         // It is an image file
                         Log.e("data","IMAGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
                         ((ImgSenderViewHolder)holder).vidIndi.setText("");
+
+                        ((ImgSenderViewHolder)holder).senderImg.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+//                                Toast.makeText(context,messagesModel.getMedia() , Toast.LENGTH_SHORT).show();
+                                Context context1= view.getContext();
+
+//                                Log.e("video", "hello i am vid" );
+
+                                Intent intent1=new Intent(context1, PictureDisplayActivity.class);
+
+                                intent1.putExtra("imgUri",messagesModel.getMedia());
+                                context1.startActivity(intent1);
+                            }
+                        });
+
                         Log.e("fileExtension:",mimeType);
                     } else if (mimeType != null && (mimeType.equals("video/mp4") || mimeType.equals("video/quicktime"))) {
                         // It is a video file
@@ -370,12 +401,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
             Picasso.get().load(messagesModel.getMedia()).placeholder(R.drawable.profile).into(((ImgSenderViewHolder)holder).senderImg);
             ((ImgSenderViewHolder)holder).senderTime.setText(timeString);
-            ((ImgSenderViewHolder)holder).senderImg.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(context,messagesModel.getMedia() , Toast.LENGTH_SHORT).show();
-                }
-            });
+
         }
 
 
