@@ -8,17 +8,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.whatsapp.Adapters.ChatAdapter;
 import com.example.whatsapp.Models.MessagesModel;
 
@@ -26,16 +30,31 @@ import com.example.whatsapp.Models.Users;
 import com.example.whatsapp.Services.FCMSendMessageService;
 import com.example.whatsapp.Services.SecretsManager;
 import com.example.whatsapp.databinding.ActivityChatDetailBinding;
+//<<<<<<< HEAD
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+//=======
+import com.example.whatsapp.databinding.ImagePreviewBottomSheetDialogBinding;
+import com.example.whatsapp.databinding.SelectedTypeOfMediaBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+//>>>>>>> 02e71a565f12218fc57641db7746396e40dc7051
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+//<<<<<<< HEAD
 import com.google.firebase.messaging.FirebaseMessaging;
+//=======
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+//>>>>>>> 02e71a565f12218fc57641db7746396e40dc7051
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -55,6 +74,7 @@ public class ChatDetailActivity extends AppCompatActivity {
     FirebaseAuth auth;
     String scheduled_message="";
     TextView onlineCheck;
+    Uri imageUri;
 
     private Handler handler;
     private Runnable task;
@@ -68,7 +88,44 @@ public class ChatDetailActivity extends AppCompatActivity {
         binding = ActivityChatDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //  ***********  IV Feature *********
+        binding.imageSender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final BottomSheetDialog bottomSheetDialog=new BottomSheetDialog(ChatDetailActivity.this);
+                SelectedTypeOfMediaBinding selectedTypeOfMediaBinding= SelectedTypeOfMediaBinding.inflate(getLayoutInflater());
+                bottomSheetDialog.setContentView(selectedTypeOfMediaBinding.getRoot());
+                bottomSheetDialog.show();
+
+                selectedTypeOfMediaBinding.imageSend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent1=new Intent();
+                        intent1.setAction(Intent.ACTION_GET_CONTENT);
+                        intent1.setType("image/*");
+
+                        startActivityForResult(intent1,45);
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+
+                selectedTypeOfMediaBinding.videoSend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent1=new Intent();
+                        intent1.setAction(Intent.ACTION_GET_CONTENT);
+                        intent1.setType("video/*");
+
+                        startActivityForResult(intent1,45);
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+
+            }
+        });
         onlineCheck=binding.onlineCheck;
+
+        //  ***********  IV Feature *********
 
         getSupportActionBar().hide();
         database = FirebaseDatabase.getInstance();
@@ -385,6 +442,7 @@ public class ChatDetailActivity extends AppCompatActivity {
             }
         };
     }
+
     private void SpeakNow(View view){
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -398,7 +456,99 @@ public class ChatDetailActivity extends AppCompatActivity {
         if(requestCode==111 && resultCode== RESULT_OK){
             binding.etMessage.setText(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0));
         }
+
+        //  ***********  IV Feature *********
+        if(requestCode==45){
+            if(data!=null)
+            {
+                if (data.getData()!=null){
+                    imageUri=data.getData();
+                    final BottomSheetDialog bottomSheetDialogImage=new BottomSheetDialog(ChatDetailActivity.this);
+                    ImagePreviewBottomSheetDialogBinding previewBottomSheetDialogBinding= ImagePreviewBottomSheetDialogBinding.inflate(getLayoutInflater());
+                    bottomSheetDialogImage.setContentView(previewBottomSheetDialogBinding.getRoot());
+                    bottomSheetDialogImage.show();
+
+                    String mediaType = getMediaType(imageUri);
+
+                    if(mediaType.equals("image"))
+                    {
+                        previewBottomSheetDialogBinding.imgMessage.setImageURI(imageUri);
+                    }
+                    else if(mediaType.equals("video"))
+                    {
+                        Glide.with(ChatDetailActivity.this).asBitmap().load(imageUri).into(previewBottomSheetDialogBinding.imgMessage);
+                    }
+
+
+//                    Picasso.get().load(imageUri).placeholder(R.drawable.profile).into(previewBottomSheetDialogBinding.imgMessage);
+                    Toast.makeText(this, imageUri.toString(), Toast.LENGTH_SHORT).show();
+
+                    previewBottomSheetDialogBinding.sendImg.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (previewBottomSheetDialogBinding.edtGetMsgDescription.getText().toString().trim().isEmpty()||!previewBottomSheetDialogBinding.edtGetMsgDescription.getText().toString().trim().isEmpty()){
+                                final String senderId = auth.getUid();
+                                String receiverId = getIntent().getStringExtra("userId");
+                                final String senderRoom = senderId + receiverId; // This ID is used to create a 1st child node inside Chats from Sender to Receiver in the FireBase database
+                                final String receiverRoom = receiverId + senderId; // This ID is used to create a  2nd child node inside Chats from Receiver to Sender in the FireBase database
+
+                                final StorageReference storage= FirebaseStorage.getInstance().getReference().child("sent_images").child(senderRoom).child(String.valueOf(new Date().getTime()));
+                                storage.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                        storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                Toast.makeText(ChatDetailActivity.this, "worked", Toast.LENGTH_SHORT).show();
+                                                MessagesModel picMsg= new MessagesModel();
+                                                picMsg.setuId(senderId);
+                                                picMsg.setTimestamp(new Date().getTime());
+                                                picMsg.setMedia(uri.toString());
+                                                picMsg.setMessageDesc(previewBottomSheetDialogBinding.edtGetMsgDescription.getText().toString());
+
+                                                // Here .push() ensures that a new Id is created with the help of the TimeStamp ...whenever a new message is sent -> Push is usually used to create unique id's
+                                                database.getReference().child("chats").child(senderRoom).push().setValue(picMsg).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        //if message from sender is added successfully to the SenderReciver Node then add the same message to the ReceiverSender Node
+                                                        database.getReference().child("chats").child(receiverRoom).push().setValue(picMsg).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void unused) {
+
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+
     }
+
+    private String getMediaType(Uri imageUri) {
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+
+        String extension = mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(imageUri));
+
+        if (extension != null && extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg") || extension.equalsIgnoreCase("png")) {
+            return "image";
+        } else if (extension != null && (extension.equalsIgnoreCase("mp4") || extension.equalsIgnoreCase("mov"))) {
+            return "video";
+        } else {
+            return "unknown";
+        }
+    }
+
+    //  ***********  IV Feature *********
 
     //method to calculate the delay of after how much time the message should be sent
     private long calculateDelay(int hours,int minutes) {
