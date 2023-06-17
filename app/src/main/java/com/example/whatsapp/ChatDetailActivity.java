@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.whatsapp.Adapters.ChatAdapter;
+import com.example.whatsapp.Models.CallLogs;
 import com.example.whatsapp.Models.MessagesModel;
 
 import com.example.whatsapp.Models.Users;
@@ -136,6 +137,10 @@ public class ChatDetailActivity extends AppCompatActivity {
         String userName = getIntent().getStringExtra("userName");
         String profilePic = getIntent().getStringExtra("profilePic");
 
+        final String senderRoom = senderId + receiverId; // This ID is used to create a 1st child node inside Chats from Sender to Receiver in the FireBase database
+        final String receiverRoom = receiverId + senderId; // This ID is used to create a  2nd child node inside Chats from Receiver to Sender in the FireBase database
+
+
         binding.userName.setText(userName);
         Picasso.get().load(profilePic).placeholder(R.drawable.profile).into(binding.profileImage);
 
@@ -188,11 +193,27 @@ public class ChatDetailActivity extends AppCompatActivity {
         binding.btnVideoCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Date date = new Date();
+                long currentTimeStamp = date.getTime();
+                CallLogs callLog = new CallLogs(senderId, receiverId, currentTimeStamp, "Video");
+
                 Intent intent = new Intent(ChatDetailActivity.this, VideoCallActivity.class);
                 intent.putExtra("receiverId",receiverId);
                 intent.putExtra("callerId", senderId);
                 intent.putExtra("srToken",1);  //Sender or caller
                 database.getReference().child("Users").child(receiverId).child("incomingVideoCall").setValue(senderId);
+//                database.getReference().child("CallLogs").child(senderRoom).push().setValue(callLog).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void unused) {
+//                        database.getReference().child("CallLogs").child(receiverRoom).push().setValue(callLog).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void unused) {
+//                                startActivity(intent);
+//                            }
+//                        });
+//                    }
+//                });
                 startActivity(intent);
             }
         });
@@ -200,11 +221,27 @@ public class ChatDetailActivity extends AppCompatActivity {
         binding.btnVoiceCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Date date = new Date();
+                long currentTimeStamp = date.getTime();
+                CallLogs callLog = new CallLogs(senderId, receiverId, currentTimeStamp, "Voice");
+
                 Intent intent = new Intent(ChatDetailActivity.this, VoiceCallActivity.class);
                 intent.putExtra("receiverId",receiverId);
                 intent.putExtra("callerId", senderId);
                 intent.putExtra("srToken",1); //  Sender or caller
                 database.getReference().child("Users").child(receiverId).child("incomingVoiceCall").setValue(senderId);
+//                database.getReference().child("CallLogs").child(senderRoom).push().setValue(callLog).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void unused) {
+//                        database.getReference().child("CallLogs").child(receiverRoom).push().setValue(callLog).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void unused) {
+//                                startActivity(intent);
+//                            }
+//                        });
+//                    }
+//                });
                 startActivity(intent);
             }
         });
@@ -287,9 +324,6 @@ public class ChatDetailActivity extends AppCompatActivity {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         binding.chatRecyclerView.setLayoutManager(layoutManager);
-
-        final String senderRoom = senderId + receiverId; // This ID is used to create a 1st child node inside Chats from Sender to Receiver in the FireBase database
-        final String receiverRoom = receiverId + senderId; // This ID is used to create a  2nd child node inside Chats from Receiver to Sender in the FireBase database
 
         // Code to update the RecyclerView Whenever a new Chat is send by the sender
         database.getReference().child("chats").child(senderRoom).addValueEventListener(new ValueEventListener() {
