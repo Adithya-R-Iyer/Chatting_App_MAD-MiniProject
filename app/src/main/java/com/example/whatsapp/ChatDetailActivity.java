@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -486,7 +487,13 @@ public class ChatDetailActivity extends AppCompatActivity {
                     previewBottomSheetDialogBinding.sendImg.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            ProgressDialog progdialog=new ProgressDialog(ChatDetailActivity.this);
+
+                            progdialog.setTitle("Sending Media");
+                            progdialog.setMessage("please wait, sending media");
+
                             if (previewBottomSheetDialogBinding.edtGetMsgDescription.getText().toString().trim().isEmpty()||!previewBottomSheetDialogBinding.edtGetMsgDescription.getText().toString().trim().isEmpty()){
+                                progdialog.show();
                                 final String senderId = auth.getUid();
                                 String receiverId = getIntent().getStringExtra("userId");
                                 final String senderRoom = senderId + receiverId; // This ID is used to create a 1st child node inside Chats from Sender to Receiver in the FireBase database
@@ -499,13 +506,15 @@ public class ChatDetailActivity extends AppCompatActivity {
                                         storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                             @Override
                                             public void onSuccess(Uri uri) {
-                                                Toast.makeText(ChatDetailActivity.this, "worked", Toast.LENGTH_SHORT).show();
+//                                                Toast.makeText(ChatDetailActivity.this, "worked", Toast.LENGTH_SHORT).show();
                                                 MessagesModel picMsg= new MessagesModel();
                                                 picMsg.setuId(senderId);
                                                 picMsg.setTimestamp(new Date().getTime());
                                                 picMsg.setMedia(uri.toString());
                                                 picMsg.setMessageDesc(previewBottomSheetDialogBinding.edtGetMsgDescription.getText().toString());
 
+
+                                                bottomSheetDialogImage.dismiss();
                                                 // Here .push() ensures that a new Id is created with the help of the TimeStamp ...whenever a new message is sent -> Push is usually used to create unique id's
                                                 database.getReference().child("chats").child(senderRoom).push().setValue(picMsg).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -514,6 +523,7 @@ public class ChatDetailActivity extends AppCompatActivity {
                                                         database.getReference().child("chats").child(receiverRoom).push().setValue(picMsg).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void unused) {
+                                                                progdialog.dismiss();
 
                                                             }
                                                         });

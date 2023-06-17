@@ -302,7 +302,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
                 }
             });
 
-            Picasso.get().load(messagesModel.getMedia()).placeholder(R.drawable.profile).into(((ImgReceiverViewHolder)holder).receiverImg);
+            Picasso.get().load(messagesModel.getMedia()).placeholder(R.drawable.image_placeholder).into(((ImgReceiverViewHolder)holder).receiverImg);
             ((ImgReceiverViewHolder)holder).receiverTime.setText(timeString);
         }
         else if(holder.getClass() == ImgSenderViewHolder.class){
@@ -389,7 +389,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
                 }
             });;
 
-            Picasso.get().load(messagesModel.getMedia()).placeholder(R.drawable.profile).into(((ImgSenderViewHolder)holder).senderImg);
+            Picasso.get().load(messagesModel.getMedia()).placeholder(R.drawable.image_placeholder).into(((ImgSenderViewHolder)holder).senderImg);
             ((ImgSenderViewHolder)holder).senderTime.setText(timeString);
 
         }
