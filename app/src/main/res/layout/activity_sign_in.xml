@@ -24,7 +24,7 @@
             android:id="@+id/imageView"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            app:srcCompat="@drawable/whatsapp" />
+            app:srcCompat="@drawable/chat_app_icon" />
 
         <EditText
             android:id="@+id/etEmail"
