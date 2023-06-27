@@ -5,6 +5,18 @@ This is a Chatting application similar to whats app... but with more advanced an
 -> All the Reference Images are attached below<br>
 -> This App is not intended for public use... It is capable of supporting only upto some hundereds of users.
 
+# Tools and API's Used
+1. Android Studio (Dolphin Version) with JAVA as the preferred language<br>
+2. Firebase RealTime Database
+3. Agora API for Video and Voice Calling
+4. BrainShop's ChatBot 
+5. Retrofit API to interact with ChatBot
+6. Firebase Cloud Messaging to Enable Mobile Notifications
+
+# NOTE (to those who want to pull code and run the app)
+1. google-services.json is hidden and not visible to users...hence the users are requested to create their own database in Firebase and paste the Google-services.json file to the `app` dir in the Android Studio Project.<br>
+2. A file called `secrets.xml` was used to store the sensitive information (`FirebaseServerKey`,`AgoraAPIKey`,`AgoraAppCertificate`) which is hidden from the users... Please note that these information are meant to be kept private... Revealing these info may lead to security threats to the system.
+
 # Top 5 Badges
 
 ## 1. GitHub Stats - Adithya
@@ -34,7 +46,10 @@ This is a Chatting application similar to whats app... but with more advanced an
 
 ![](https://komarev.com/ghpvc/?username=Adithya-R-Iyer&color=green)
 
+
 # Reference Images and Videos
+
+All the reference images and videos related to the app are attached below...
 
 ## 1. Login Page
 
@@ -73,6 +88,6 @@ This is a Chatting application similar to whats app... but with more advanced an
 ![AIChatBot](https://github.com/Adithya-R-Iyer/Chatting_App_MAD-MiniProject/assets/69115355/d58bd4a7-fc17-43ea-96de-ecf238fc460a)
 
 
-# WORKING VIDEO
+# VIDEO SHOWING THE WORKING OF ChatSkoot
 
 https://github.com/Adithya-R-Iyer/Chatting_App_MAD-MiniProject/assets/69115355/bf7b3e9e-874b-48a0-9de3-f55b80fa95d6
