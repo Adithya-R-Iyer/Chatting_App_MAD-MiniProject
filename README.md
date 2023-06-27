@@ -1,5 +1,5 @@
 # Chatting_App_MAD-MiniProject
-This is a Chatting application similar to whats app... but with more advanced and useful features
+This is a Chatting application similar to whats app... but with more advanced and useful features<br>
 -> This App is build as a part of the MAD Lab Mini-Project (6th Sem VTU curriculum)<br>
 -> Do check out our app in the release section<br>
 -> All the Reference Images are attached below<br>
@@ -14,7 +14,7 @@ This is a Chatting application similar to whats app... but with more advanced an
 6. Firebase Cloud Messaging to Enable Mobile Notifications
 
 # NOTE (to those who want to pull code and run the app)
-1. google-services.json is hidden and not visible to users...hence the users are requested to create their own database in Firebase and paste the Google-services.json file to the `app` dir in the Android Studio Project.<br>
+1. `google-services.json` is hidden and not visible to users...hence the users are requested to create their own database in Firebase and paste the Google-services.json file to the `app` dir in the Android Studio Project.<br>
 2. A file called `secrets.xml` was used to store the sensitive information (`FirebaseServerKey`,`AgoraAPIKey`,`AgoraAppCertificate`) which is hidden from the users... Please note that these information are meant to be kept private... Revealing these info may lead to security threats to the system.
 
 # Top 5 Badges
@@ -22,29 +22,22 @@ This is a Chatting application similar to whats app... but with more advanced an
 ## 1. GitHub Stats - Adithya
 
 ![Your Repository's Stats](https://github-readme-stats.vercel.app/api?username=Adithya-R-Iyer&show_icons=true)
-## 1. GitHub Stats - Karthik
+## 2. GitHub Stats - Karthik
 
 ![Your Repository's Stats](https://github-readme-stats.vercel.app/api?username=KarthikNaik-SCEM&show_icons=true)
 
-## 2. Most Used Languages
-
-![Your Repository's Stats](https://github-readme-stats.vercel.app/api/top-langs/?username=Tanu-N-Prabhu&theme=blue-green)
-
 ## 3. Contributors Badge
 
-![Your Repository's Stats](https://contrib.rocks/image?repo=Tanu-N-Prabhu/Python)
+![Your Repository's Stats](https://contrib.rocks/image?repo=Adithya-R-Iyer/Chatting_App_MAD-MiniProject)
 
 ## 4. Random Joke Generator
 
 ![Jokes Card](https://readme-jokes.vercel.app/api)
 
-## 5. Profile View Counter
 
-![Profile View Counter](https://komarev.com/ghpvc/?username=Tanu-N-Prabhu)
+## 5. Repository View Counter - HITS
 
-### Repository View Counter - HITS
-
-![](https://komarev.com/ghpvc/?username=Adithya-R-Iyer&color=green)
+![](https://komarev.com/ghpvc/?username=Adithya-R-Iyer&label=Repository+Views&color=green)
 
 
 # Reference Images and Videos
