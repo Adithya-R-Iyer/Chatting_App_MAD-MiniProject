@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.Manifest;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -30,6 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -59,6 +62,12 @@ public class VoiceCallActivity extends AppCompatActivity {
 
     String callerId="", receiverId="";
     Boolean isAudio = true;
+
+    Handler handler = new Handler();
+    String callDuration = "00:00:01";
+
+    // Parse the time string into a LocalTime object
+    LocalTime callDurationTime = LocalTime.parse(callDuration, DateTimeFormatter.ofPattern("HH:mm:ss"));
 
     private static final int PERMISSION_REQ_ID = 22;
     private static final String[] REQUESTED_PERMISSIONS =
@@ -187,7 +196,22 @@ public class VoiceCallActivity extends AppCompatActivity {
                 }
             });
         }
-        binding.tvCallDuration.setText("00:00:00"); // temporary
+
+        //Code to change the CallDuration Dynamically
+        if(callerId.equals(auth.getUid()))
+            binding.tvCallDuration.setText("Ringing...");
+
+        database.getReference().child("Users").child(receiverId).child("isAvailableForCalls").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Boolean isAvailableForCalls = snapshot.getValue(Boolean.class);
+                if(Boolean.TRUE.equals(isAvailableForCalls)) {
+                    handler.postDelayed(updateTimerTask,0);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
 
         // If all the permissions are granted, initialize the RtcEngine object and join a channel.
         if (!checkSelfPermission()) {
@@ -201,6 +225,7 @@ public class VoiceCallActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 agoraEngine.leaveChannel();
+                handler.removeCallbacks(updateTimerTask); // remove callBacks that updates the callDuration Time
                 Intent intent = new Intent(VoiceCallActivity.this, MainActivity.class);
                 intent.putExtra("intentToken", 1);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -263,6 +288,7 @@ public class VoiceCallActivity extends AppCompatActivity {
                             String incomingCall = user.getIncomingVoiceCall();
                             if (incomingCall.equals("null")) {
                                 agoraEngine.leaveChannel();
+                                handler.removeCallbacks(updateTimerTask); // remove callBacks that updates the callDuration Time
                                 Intent intent = new Intent(VoiceCallActivity.this, MainActivity.class);
                                 intent.putExtra("intentToken", 1);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -286,6 +312,19 @@ public class VoiceCallActivity extends AppCompatActivity {
         },0, 5000);
 //    }
     }
+
+    private final Runnable updateTimerTask = new Runnable() {
+        @Override
+        public void run() {
+            binding.tvCallDuration.setText("" + callDuration);
+            //Wait for one second
+            handler.postDelayed(this, 1000);
+            // Increment the time by one second
+            callDurationTime = callDurationTime.plusSeconds(1);
+            // Format the updated time back to a string
+            callDuration = callDurationTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        }
+    };
 
     protected void onDestroy() {
         super.onDestroy();
